@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Challenge</string>
+
+    <string name="request_error">The request can\'t be completed. Please check your internet connection or try again later.</string>
+    <string name="http_error">Something went wrong. Please get in touch with developer.</string>
+    <string name="show_on_map">Show on map</string>
+    <string name="no_photos_to_show">This place has not any photos to show.</string>
+
+</resources>
