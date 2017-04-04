@@ -16,7 +16,6 @@ import com.android.volley.Response;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.NetworkImageView;
 
-import org.apache.http.HttpStatus;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -34,9 +33,7 @@ import ycagri.challenge.pojo.Venue;
  */
 public class MasterFragment extends ChallengeFragment {
 
-    private RecyclerView mMasterList;
     private MasterListAdapter mMasterListAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
     private ArrayList<Venue> mVenuesArray;
 
     /**
@@ -62,10 +59,9 @@ public class MasterFragment extends ChallengeFragment {
         mVenuesArray = new ArrayList<>();
         mMasterListAdapter = new MasterListAdapter(mVenuesArray);
 
-        mMasterList = (RecyclerView) parentView.findViewById(R.id.rv_master_list);
-        mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-        mMasterList.setLayoutManager(mLayoutManager);
-        mMasterList.setAdapter(mMasterListAdapter);
+        RecyclerView masterList = (RecyclerView) parentView.findViewById(R.id.rv_master_list);
+        masterList.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
+        masterList.setAdapter(mMasterListAdapter);
 
         mProgressBar = (android.widget.ProgressBar) parentView.findViewById(R.id.progress_bar);
 
@@ -86,7 +82,7 @@ public class MasterFragment extends ChallengeFragment {
                 mProgressBar.setVisibility(View.GONE);
                 int resultCode = jsonObject.optJSONObject("meta").optInt("code");
 
-                if (resultCode == HttpStatus.SC_OK) {
+                if (resultCode == 200) {
                     JSONObject response = jsonObject.optJSONObject("response");
                     if (response != null) {
                         JSONArray venues = response.optJSONArray("venues");
@@ -109,11 +105,11 @@ public class MasterFragment extends ChallengeFragment {
         return parentView;
     }
 
-    public class MasterListAdapter extends RecyclerView.Adapter<MasterListAdapter.MasterListItemHolder> {
+    class MasterListAdapter extends RecyclerView.Adapter<MasterListAdapter.MasterListItemHolder> {
 
         private ArrayList<Venue> mVenueArray;
 
-        public MasterListAdapter(ArrayList<Venue> modelArray) {
+        MasterListAdapter(ArrayList<Venue> modelArray) {
             this.mVenueArray = modelArray;
         }
 
@@ -132,7 +128,7 @@ public class MasterFragment extends ChallengeFragment {
                     .getImageLoader());
             holder.mNameText.setText(venue.getName());
 
-            holder.mContainer.setOnClickListener(new View.OnClickListener() {
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     mListener.addFragment(DetailFragment.newInstance(venue));
@@ -145,16 +141,14 @@ public class MasterFragment extends ChallengeFragment {
             return mVenueArray.size();
         }
 
-        public class MasterListItemHolder extends RecyclerView.ViewHolder {
+        class MasterListItemHolder extends RecyclerView.ViewHolder {
 
-            private View mContainer;
             private NetworkImageView mIconImage;
             private TextView mNameText;
 
-            public MasterListItemHolder(View itemView) {
+            MasterListItemHolder(View itemView) {
                 super(itemView);
 
-                mContainer = itemView.findViewById(R.id.venue_item_container);
                 mIconImage = (NetworkImageView) itemView.findViewById(R.id.iv_icon);
                 mNameText = (TextView) itemView.findViewById(R.id.tv_name);
             }

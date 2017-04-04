@@ -23,11 +23,7 @@ public class Venue implements Parcelable {
     private String mIconUrl;
     private ArrayList<String> mPhotosList;
 
-    public Venue() {
-
-    }
-
-    public Venue(Parcel in) {
+    private Venue(Parcel in) {
         mId = in.readString();
         mName = in.readString();
         mUrl = in.readString();

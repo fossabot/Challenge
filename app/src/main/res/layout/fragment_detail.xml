@@ -10,10 +10,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <ycagri.challenge.view.SquareViewPager
+        <android.support.v4.view.ViewPager
             android:id="@+id/vp_venue_photos"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="wrap_content" />
 
         <ProgressBar
             android:id="@+id/progress_bar"

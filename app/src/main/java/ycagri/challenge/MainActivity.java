@@ -4,14 +4,14 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import ycagri.challenge.fragments.MasterFragment;
 import ycagri.challenge.interfaces.OnFragmentInteractionListener;
 
 
-public class MainActivity extends ActionBarActivity implements OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements OnFragmentInteractionListener {
 
 
     @Override
@@ -29,11 +29,18 @@ public class MainActivity extends ActionBarActivity implements OnFragmentInterac
 
     @Override
     public void addFragment(Fragment fragment) {
-        getSupportFragmentManager()
-                .beginTransaction()
-                .add(R.id.fragment_container, fragment)
-                .addToBackStack(null)
-                .commit();
+        if (findViewById(R.id.fragment_detail_container) == null) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .add(R.id.fragment_container, fragment)
+                    .addToBackStack(null)
+                    .commit();
+        } else {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_detail_container, fragment)
+                    .commit();
+        }
     }
 
     @Override
@@ -69,7 +76,7 @@ public class MainActivity extends ActionBarActivity implements OnFragmentInterac
     }
 
     @Override
-    public void setTitle(String title) {
-        getSupportActionBar().setTitle(title);
+    public void setToolbarTitle(String title) {
+        setTitle(title);
     }
 }

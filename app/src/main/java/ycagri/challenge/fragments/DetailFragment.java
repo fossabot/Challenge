@@ -1,5 +1,6 @@
 package ycagri.challenge.fragments;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -9,7 +10,7 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,7 +19,6 @@ import com.android.volley.Response;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.NetworkImageView;
 
-import org.apache.http.HttpStatus;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -34,12 +34,11 @@ import ycagri.challenge.pojo.Venue;
  * create an instance of this fragment.
  */
 public class DetailFragment extends ChallengeFragment implements View.OnClickListener {
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    // the fragment initialization parameters, e.g. ARG_VENUE
     private static final String ARG_VENUE = "venue";
 
     private Venue mVenue;
 
-    private ViewPager mPhotosViewPager;
     private TextView mNoPhotosToShow;
     private VenuePhotosPagerAdapter mPhotosAdapter;
 
@@ -75,13 +74,13 @@ public class DetailFragment extends ChallengeFragment implements View.OnClickLis
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View parentView = inflater.inflate(R.layout.fragment_detail, container, false);
-        mPhotosViewPager = (ViewPager) parentView.findViewById(R.id.vp_venue_photos);
+        ViewPager photosViewPager = (ViewPager) parentView.findViewById(R.id.vp_venue_photos);
         mProgressBar = (android.widget.ProgressBar) parentView.findViewById(R.id.progress_bar);
         mNoPhotosToShow = (TextView) parentView.findViewById(R.id.no_photos_to_show);
 
         if (mVenue.getPhotosList() == null) {
             mVenue.setPhotosList(new ArrayList<String>());
-            mPhotosAdapter = new VenuePhotosPagerAdapter(mVenue.getPhotosList());
+            mPhotosAdapter = new VenuePhotosPagerAdapter(getContext(), mVenue.getPhotosList());
 
             ChallengeApplication.getInstance().addToRequestQueue(new JsonObjectRequest(Request.Method.GET,
                     generateRequestUrl(mVenue.getId() + "/photos?"),
@@ -91,7 +90,7 @@ public class DetailFragment extends ChallengeFragment implements View.OnClickLis
                     mProgressBar.setVisibility(View.GONE);
                     int resultCode = jsonObject.optJSONObject("meta").optInt("code");
 
-                    if (resultCode == HttpStatus.SC_OK) {
+                    if (resultCode == 200) {
                         JSONObject response = jsonObject.optJSONObject("response");
                         if (response != null) {
                             JSONArray items = response.optJSONObject("photos").optJSONArray("items");
@@ -123,14 +122,13 @@ public class DetailFragment extends ChallengeFragment implements View.OnClickLis
             ));
         } else {
             mProgressBar.setVisibility(View.GONE);
-            mPhotosAdapter = new VenuePhotosPagerAdapter(mVenue.getPhotosList());
+            mPhotosAdapter = new VenuePhotosPagerAdapter(getContext(), mVenue.getPhotosList());
         }
 
-        mPhotosViewPager.setAdapter(mPhotosAdapter);
-
+        photosViewPager.setAdapter(mPhotosAdapter);
         parentView.findViewById(R.id.btn_map).setOnClickListener(this);
 
-        mListener.setTitle(mVenue.getName());
+        mListener.setToolbarTitle(mVenue.getName());
 
         return parentView;
     }
@@ -149,34 +147,34 @@ public class DetailFragment extends ChallengeFragment implements View.OnClickLis
 
     @Override
     public void onDetach() {
-        mListener.setTitle(getString(R.string.app_name));
+        mListener.setToolbarTitle(getString(R.string.app_name));
         super.onDetach();
     }
 
     private class VenuePhotosPagerAdapter extends PagerAdapter {
 
+        private LayoutInflater mInflater;
         private ArrayList<String> mPhotos;
 
-        public VenuePhotosPagerAdapter(ArrayList<String> photos) {
+        VenuePhotosPagerAdapter(Context context, ArrayList<String> photos) {
+            mInflater = LayoutInflater.from(context);
             mPhotos = photos;
         }
 
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
-            NetworkImageView imageView = new NetworkImageView(getActivity());
-            imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT));
+            View view = mInflater.inflate(R.layout.item_detail_pager, container, false);
+            NetworkImageView imageView = (NetworkImageView) view.findViewById(R.id.iv_pager_item);
             imageView.setImageUrl(mPhotos.get(position),
                     ChallengeApplication.getInstance().getImageLoader());
-            imageView.setScaleType(ImageView.ScaleType.FIT_XY);
 
-            container.addView(imageView);
-            return imageView;
+            container.addView(view);
+            return view;
         }
 
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
-            container.removeView((NetworkImageView) object);
+            container.removeView((FrameLayout) object);
         }
 
         @Override

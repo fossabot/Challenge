@@ -1,6 +1,6 @@
 package ycagri.challenge.fragments;
 
-import android.app.Activity;
+import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -29,20 +29,20 @@ public class ChallengeFragment extends Fragment {
     protected Response.ErrorListener mErrorListener = new Response.ErrorListener() {
         @Override
         public void onErrorResponse(VolleyError volleyError) {
-            if(mProgressBar != null)
+            if (mProgressBar != null)
                 mProgressBar.setVisibility(View.GONE);
             Toast.makeText(getActivity(), R.string.request_error, Toast.LENGTH_LONG).show();
         }
     };
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    public void onAttach(Context context) {
+        super.onAttach(context);
 
         try {
-            mListener = (OnFragmentInteractionListener) activity;
+            mListener = (OnFragmentInteractionListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() + "must implement OnFragmentInteractionListener!");
+            throw new ClassCastException(context.toString() + "must implement OnFragmentInteractionListener!");
         }
     }
 
