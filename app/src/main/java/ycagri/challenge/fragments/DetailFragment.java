@@ -1,9 +1,8 @@
 package ycagri.challenge.fragments;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -18,6 +17,12 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.NetworkImageView;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -33,7 +38,7 @@ import ycagri.challenge.pojo.Venue;
  * Use the {@link DetailFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class DetailFragment extends ChallengeFragment implements View.OnClickListener {
+public class DetailFragment extends ChallengeFragment implements OnMapReadyCallback {
     // the fragment initialization parameters, e.g. ARG_VENUE
     private static final String ARG_VENUE = "venue";
 
@@ -73,10 +78,16 @@ public class DetailFragment extends ChallengeFragment implements View.OnClickLis
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View parentView = inflater.inflate(R.layout.fragment_detail, container, false);
-        ViewPager photosViewPager = (ViewPager) parentView.findViewById(R.id.vp_venue_photos);
-        mProgressBar = (android.widget.ProgressBar) parentView.findViewById(R.id.progress_bar);
-        mNoPhotosToShow = (TextView) parentView.findViewById(R.id.no_photos_to_show);
+        return inflater.inflate(R.layout.fragment_detail, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        ViewPager photosViewPager = (ViewPager) view.findViewById(R.id.vp_venue_photos);
+        mProgressBar = (android.widget.ProgressBar) view.findViewById(R.id.progress_bar);
+        mNoPhotosToShow = (TextView) view.findViewById(R.id.no_photos_to_show);
 
         if (mVenue.getPhotosList() == null) {
             mVenue.setPhotosList(new ArrayList<String>());
@@ -126,29 +137,29 @@ public class DetailFragment extends ChallengeFragment implements View.OnClickLis
         }
 
         photosViewPager.setAdapter(mPhotosAdapter);
-        parentView.findViewById(R.id.btn_map).setOnClickListener(this);
 
         mListener.setToolbarTitle(mVenue.getName());
 
-        return parentView;
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.btn_map: {
-                startActivity(
-                        new Intent(Intent.ACTION_VIEW,
-                                Uri.parse("geo:" + mVenue.getLatitude() + "," + mVenue.getLongitude())));
-                break;
-            }
-        }
+        SupportMapFragment mapFragment = new SupportMapFragment();
+        mapFragment.getMapAsync(this);
+        getChildFragmentManager().beginTransaction()
+                .replace(R.id.map_fragment_container, mapFragment)
+                .commit();
     }
 
     @Override
     public void onDetach() {
         mListener.setToolbarTitle(getString(R.string.app_name));
         super.onDetach();
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        LatLng latLng = new LatLng(mVenue.getLatitude(), mVenue.getLongitude());
+        googleMap.addMarker(new MarkerOptions()
+                .position(latLng)
+                .title(mVenue.getName()));
+        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14));
     }
 
     private class VenuePhotosPagerAdapter extends PagerAdapter {

@@ -140,6 +140,11 @@ public class Venue implements Parcelable {
     }
 
     @Override
+    public String toString() {
+        return mName;
+    }
+
+    @Override
     public int describeContents() {
         return 0;
     }

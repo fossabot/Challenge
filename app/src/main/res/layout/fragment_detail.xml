@@ -8,7 +8,8 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
         <android.support.v4.view.ViewPager
             android:id="@+id/vp_venue_photos"
@@ -32,11 +33,10 @@
             android:visibility="gone" />
     </FrameLayout>
 
-    <Button
-        android:id="@+id/btn_map"
+    <FrameLayout
+        android:id="@+id/map_fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/primary"
-        android:text="@string/show_on_map" />
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
 </LinearLayout>

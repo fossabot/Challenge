@@ -3,6 +3,8 @@
 
     <string name="app_name">Challenge</string>
 
+    <string name="google_maps_key" translatable="false">AIzaSyDn_Z44cd61Hu96CyR5ImOjSkmi2TFz980</string>
+
     <string name="request_error">The request can\'t be completed. Please check your internet connection or try again later.</string>
     <string name="http_error">Something went wrong. Please get in touch with developer.</string>
     <string name="show_on_map">Show on map</string>

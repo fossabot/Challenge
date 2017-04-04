@@ -1,29 +1,39 @@
 package ycagri.challenge.fragments;
 
+import android.content.Context;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
+import android.support.annotation.LayoutRes;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.NetworkImageView;
+import com.google.android.gms.location.LocationListener;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import ycagri.challenge.ChallengeApplication;
 import ycagri.challenge.R;
 import ycagri.challenge.pojo.Venue;
+import ycagri.challenge.util.LastLocationFinder;
 
 
 /**
@@ -33,8 +43,13 @@ import ycagri.challenge.pojo.Venue;
  */
 public class MasterFragment extends ChallengeFragment {
 
+    private static final String KEY_VENUES = "venues";
+    private static final String KEY_SELECTED_INDEX = "selected_index";
+
+    private ListView mVenuesLV;
     private MasterListAdapter mMasterListAdapter;
-    private ArrayList<Venue> mVenuesArray;
+    private ArrayList<Venue> mVenuesArray = null;
+    private int mCheckedItemPosition;
 
     /**
      * Use this factory method to create a new instance of
@@ -53,29 +68,59 @@ public class MasterFragment extends ChallengeFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        mCheckedItemPosition = AbsListView.INVALID_POSITION;
+        if (savedInstanceState != null) {
+            mCheckedItemPosition = savedInstanceState.getInt(KEY_SELECTED_INDEX, AbsListView.INVALID_POSITION);
+            mVenuesArray = savedInstanceState.getParcelableArrayList(KEY_VENUES);
+        } else {
+            mVenuesArray = new ArrayList<>();
+        }
         // Inflate the layout for this fragment
         View parentView = inflater.inflate(R.layout.fragment_master, container, false);
 
-        mVenuesArray = new ArrayList<>();
-        mMasterListAdapter = new MasterListAdapter(mVenuesArray);
+        mMasterListAdapter = new MasterListAdapter(getContext(), R.layout.item_master_list, R.id.tv_name, mVenuesArray);
 
-        RecyclerView masterList = (RecyclerView) parentView.findViewById(R.id.rv_master_list);
-        masterList.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
-        masterList.setAdapter(mMasterListAdapter);
+        mVenuesLV = (ListView) parentView.findViewById(R.id.lv_master_list);
+        mVenuesLV.setAdapter(mMasterListAdapter);
+        mVenuesLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                if (mVenuesLV.getChoiceMode() == AbsListView.CHOICE_MODE_SINGLE)
+                    mVenuesLV.setItemChecked(i, mVenuesLV.isItemChecked(i));
+                mListener.addFragment(mVenuesArray.get(i));
+            }
+        });
 
         mProgressBar = (android.widget.ProgressBar) parentView.findViewById(R.id.progress_bar);
-
-        Location location = mListener.getLastKnownLocation();
-        double lat, lng;
-        if (location == null) {
-            lat = 41d;
-            lng = 29d;
-        } else {
-            lat = location.getLatitude();
-            lng = location.getLongitude();
+        
+        if (!mVenuesArray.isEmpty()) {
+            if (mCheckedItemPosition != AbsListView.INVALID_POSITION)
+                mVenuesLV.setItemChecked(mCheckedItemPosition, false);
+            mProgressBar.setVisibility(View.GONE);
         }
+
+        return parentView;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        if (mVenuesLV.getCheckedItemPosition() != AbsListView.INVALID_POSITION)
+            outState.putInt(KEY_SELECTED_INDEX, mVenuesLV.getCheckedItemPosition());
+        else if (mCheckedItemPosition != AbsListView.INVALID_POSITION)
+            outState.putInt(KEY_SELECTED_INDEX, mCheckedItemPosition);
+        outState.putParcelableArrayList(KEY_VENUES, mVenuesArray);
+        super.onSaveInstanceState(outState);
+    }
+
+    public void updateLocation(Location location) {
+        if (location != null) {
+            retrieveVenues(location);
+        }
+    }
+
+    private void retrieveVenues(Location location) {
         ChallengeApplication.getInstance().addToRequestQueue(new JsonObjectRequest(Request.Method.GET,
-                generateRequestUrl("search?ll=" + lat + "," + lng + "&"),
+                generateRequestUrl("search?ll=" + location.getLatitude() + "," + location.getLongitude() + "&"),
                 null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
@@ -101,57 +146,33 @@ public class MasterFragment extends ChallengeFragment {
             }
         }, mErrorListener
         ));
-
-        return parentView;
     }
 
-    class MasterListAdapter extends RecyclerView.Adapter<MasterListAdapter.MasterListItemHolder> {
+    private class MasterListAdapter extends ArrayAdapter<Venue> {
 
-        private ArrayList<Venue> mVenueArray;
+        MasterListAdapter(@NonNull Context context, @LayoutRes int resource, @IdRes int textViewResourceId, @NonNull List<Venue> objects) {
+            super(context, resource, textViewResourceId, objects);
 
-        MasterListAdapter(ArrayList<Venue> modelArray) {
-            this.mVenueArray = modelArray;
         }
 
+        @NonNull
         @Override
-        public MasterListItemHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View v = LayoutInflater.from(getActivity()).inflate(R.layout.item_master_list, parent,
-                    false);
+        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+            View view = super.getView(position, convertView, parent);
 
-            return new MasterListItemHolder(v);
-        }
+            final Venue venue = getItem(position);
+            NetworkImageView iconIV = (NetworkImageView) view.findViewById(R.id.iv_icon);
+            if (venue != null)
+                iconIV.setImageUrl(venue.getIconUrl(), ChallengeApplication.getInstance()
+                        .getImageLoader());
 
-        @Override
-        public void onBindViewHolder(MasterListItemHolder holder, int position) {
-            final Venue venue = mVenueArray.get(position);
-            holder.mIconImage.setImageUrl(venue.getIconUrl(), ChallengeApplication.getInstance()
-                    .getImageLoader());
-            holder.mNameText.setText(venue.getName());
+            if (view.isActivated())
+                view.setBackgroundResource(R.color.primary_dark);
+            else
+                view.setBackgroundColor(Color.WHITE);
 
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mListener.addFragment(DetailFragment.newInstance(venue));
-                }
-            });
-        }
-
-        @Override
-        public int getItemCount() {
-            return mVenueArray.size();
-        }
-
-        class MasterListItemHolder extends RecyclerView.ViewHolder {
-
-            private NetworkImageView mIconImage;
-            private TextView mNameText;
-
-            MasterListItemHolder(View itemView) {
-                super(itemView);
-
-                mIconImage = (NetworkImageView) itemView.findViewById(R.id.iv_icon);
-                mNameText = (TextView) itemView.findViewById(R.id.tv_name);
-            }
+            return view;
         }
     }
+
 }
