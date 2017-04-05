@@ -1,4 +1,4 @@
-package ycagri.challenge;
+package ycagri.challenge.activity;
 
 import android.Manifest;
 import android.content.Intent;
@@ -25,6 +25,7 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 
+import ycagri.challenge.R;
 import ycagri.challenge.fragments.DetailFragment;
 import ycagri.challenge.fragments.MasterFragment;
 import ycagri.challenge.interfaces.OnFragmentInteractionListener;
@@ -42,7 +43,6 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     private Venue mSelectedVenue = null;
 
     private GoogleApiClient mGoogleApiClient;
-    private boolean mLocationSettingsStatus = false;
     private LocationRequest mLocationRequest;
 
     private final LocationListener mLocationListener = new LocationListener() {
@@ -72,8 +72,6 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                         if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, mLocationListener);
                         }
-                    } else {
-                        mLocationSettingsStatus = true;
                     }
                     break;
                 case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:

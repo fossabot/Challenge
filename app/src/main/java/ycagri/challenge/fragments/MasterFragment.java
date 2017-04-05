@@ -92,10 +92,11 @@ public class MasterFragment extends ChallengeFragment {
         });
 
         mProgressBar = (android.widget.ProgressBar) parentView.findViewById(R.id.progress_bar);
-        
+
         if (!mVenuesArray.isEmpty()) {
-            if (mCheckedItemPosition != AbsListView.INVALID_POSITION)
-                mVenuesLV.setItemChecked(mCheckedItemPosition, false);
+            if (mCheckedItemPosition != AbsListView.INVALID_POSITION) {
+                mVenuesLV.setItemChecked(mCheckedItemPosition, mVenuesLV.isItemChecked(mCheckedItemPosition));
+            }
             mProgressBar.setVisibility(View.GONE);
         }
 
