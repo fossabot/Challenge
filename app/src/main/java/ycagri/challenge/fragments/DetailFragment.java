@@ -3,7 +3,6 @@ package ycagri.challenge.fragments;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
@@ -34,9 +33,11 @@ import ycagri.challenge.R;
 import ycagri.challenge.pojo.Venue;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link DetailFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * Displays detail information about selected venue. Consists of a {@link ViewPager} that displays
+ * photos of the venue and a {@link GoogleMap} instance to show location of the venue.
+ *
+ * @author ycagri
+ * @since 04.05.2017
  */
 public class DetailFragment extends ChallengeFragment implements OnMapReadyCallback {
     // the fragment initialization parameters, e.g. ARG_VENUE

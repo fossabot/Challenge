@@ -9,7 +9,10 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 /**
- * Created by YigitCagri on 10.1.2015.
+ * Simple Plain Old Java Object keeps information about venue.
+ *
+ * @author ycagri
+ * @since 10.1.2015.
  */
 public class Venue implements Parcelable {
 

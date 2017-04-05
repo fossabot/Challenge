@@ -15,7 +15,10 @@ import ycagri.challenge.R;
 import ycagri.challenge.interfaces.OnFragmentInteractionListener;
 
 /**
- * Created by YigitCagri on 11.1.2015.
+ * Base fragment class for fragments used in the application.
+ *
+ * @author ycagri
+ * @since 11.1.2015.
  */
 public class ChallengeFragment extends Fragment {
     private static final String CLIENT_ID = "PWRC42LMLFLMEIPL05NKAQP31TG3I4XDZGPTAYSYJSBGFIGI";

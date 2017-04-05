@@ -31,7 +31,16 @@ import ycagri.challenge.fragments.MasterFragment;
 import ycagri.challenge.interfaces.OnFragmentInteractionListener;
 import ycagri.challenge.pojo.Venue;
 
-
+/**
+ * This class is the only activity that holds fragments. It has different layout implementations
+ * for landscape and portrait orientations.
+ * <p>
+ * Uses {@link GoogleApiClient} to access user's location as described in
+ * <a href="https://developer.android.com/training/location/index.html">https://developer.android.com/training/location/index.html</a>
+ *
+ * @author ycagri
+ * @since 05.04.2017
+ */
 public class MainActivity extends AppCompatActivity implements OnFragmentInteractionListener,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 

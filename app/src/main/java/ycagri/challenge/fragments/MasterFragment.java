@@ -8,7 +8,6 @@ import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +21,6 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.NetworkImageView;
-import com.google.android.gms.location.LocationListener;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -33,13 +31,13 @@ import java.util.List;
 import ycagri.challenge.ChallengeApplication;
 import ycagri.challenge.R;
 import ycagri.challenge.pojo.Venue;
-import ycagri.challenge.util.LastLocationFinder;
 
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link MasterFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * Demonstrates list of venues which are closest to user. Keeps all these venues in a {@link ListView}.
+ *
+ * @author ycagri
+ * @since 04.05.2017
  */
 public class MasterFragment extends ChallengeFragment {
 
