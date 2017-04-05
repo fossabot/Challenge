@@ -6,7 +6,7 @@ Challenge is an Android application simply displays 50 closest Foursquare venues
 
 This application is implemented using Master-Detail flow design. It also requests location permission from user. If permission is denied, user can't see any venues. 
 
-Application simply demonstrates the closest venues in the master screen. Photos of venue, location on the map is displayed in the detail flow. Moreover, some Espresso test can be found in test package.
+Application simply demonstrates the closest venues in the master screen. Photos of venue and location on the map is displayed in the detail flow. User may also see direction tips in Google Maps application using button on down-right which become visible after tapping on marker. Moreover, some Espresso test can be found in test package.
 
 <h2>How to run a sample</h2>
 
