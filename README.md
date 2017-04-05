@@ -23,4 +23,4 @@ Application simply demonstrates the closest venues in the master screen. Photos 
 
 <h2>Support</h2>
 
-*Challenge is written by [Yigit Cagri Akkaya](mail://akkayacagri@gmail.com).* Feel free to pester me to fix anything that's broken!
+*Challenge is written by [Yigit Cagri Akkaya](https://www.linkedin.com/in/yigit-cagri-akkaya-94147235/).* Feel free to pester me to fix anything that's broken!
