@@ -1,8 +1,5 @@
 package ycagri.challenge.interfaces;
 
-import android.location.Location;
-import android.support.v4.app.Fragment;
-
 import ycagri.challenge.pojo.Venue;
 
 /**

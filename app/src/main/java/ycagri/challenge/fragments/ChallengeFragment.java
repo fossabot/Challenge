@@ -29,7 +29,7 @@ public class ChallengeFragment extends Fragment {
 
     protected OnFragmentInteractionListener mListener;
 
-    protected Response.ErrorListener mErrorListener = new Response.ErrorListener() {
+    protected final Response.ErrorListener mErrorListener = new Response.ErrorListener() {
         @Override
         public void onErrorResponse(VolleyError volleyError) {
             if (mProgressBar != null)

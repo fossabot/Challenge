@@ -165,8 +165,8 @@ public class DetailFragment extends ChallengeFragment implements OnMapReadyCallb
 
     private class VenuePhotosPagerAdapter extends PagerAdapter {
 
-        private LayoutInflater mInflater;
-        private ArrayList<String> mPhotos;
+        private final LayoutInflater mInflater;
+        private final ArrayList<String> mPhotos;
 
         VenuePhotosPagerAdapter(Context context, ArrayList<String> photos) {
             mInflater = LayoutInflater.from(context);

@@ -4,7 +4,6 @@ import android.content.pm.ActivityInfo;
 import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
-import android.widget.ListView;
 
 import org.junit.Rule;
 import org.junit.Test;

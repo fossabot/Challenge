@@ -11,11 +11,15 @@ import com.android.volley.toolbox.Volley;
 import ycagri.challenge.util.LruBitmapCache;
 
 /**
- * Created by YigitCagri on 10.1.2015.
+ * Application class used as singleton. Keeps an instance of {@link RequestQueue} for HTTP requests
+ * and an instance of {@link ImageLoader} to load venue images.
+ *
+ * @author ycagri
+ * @since 10.1.2015.
  */
 public class ChallengeApplication extends Application {
 
-    public static final String TAG = ChallengeApplication.class.getSimpleName();
+    private static final String TAG = ChallengeApplication.class.getSimpleName();
 
     private RequestQueue mRequestQueue;
     private ImageLoader mImageLoader;
@@ -32,7 +36,7 @@ public class ChallengeApplication extends Application {
         return mInstance;
     }
 
-    public RequestQueue getRequestQueue() {
+    private RequestQueue getRequestQueue() {
         if (mRequestQueue == null)
             mRequestQueue = Volley.newRequestQueue(getApplicationContext());
 
