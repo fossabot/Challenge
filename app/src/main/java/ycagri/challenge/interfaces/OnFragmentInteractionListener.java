@@ -1,6 +1,6 @@
 package ycagri.challenge.interfaces;
 
-import ycagri.challenge.pojo.Venue;
+import ycagri.challenge.data.Venue;
 
 /**
  * Interface provides communication between fragments and activity.

@@ -30,7 +30,7 @@ import java.util.ArrayList;
 
 import ycagri.challenge.ChallengeApplication;
 import ycagri.challenge.R;
-import ycagri.challenge.pojo.Venue;
+import ycagri.challenge.data.Venue;
 
 /**
  * Displays detail information about selected venue. Consists of a {@link ViewPager} that displays
@@ -91,7 +91,7 @@ public class DetailFragment extends ChallengeFragment implements OnMapReadyCallb
         mNoPhotosToShow = (TextView) view.findViewById(R.id.no_photos_to_show);
 
         if (mVenue.getPhotosList() == null) {
-            mVenue.setPhotosList(new ArrayList<String>());
+            //mVenue.setPhotosList(new ArrayList<String>());
             mPhotosAdapter = new VenuePhotosPagerAdapter(getContext(), mVenue.getPhotosList());
 
             ChallengeApplication.getInstance().addToRequestQueue(new JsonObjectRequest(Request.Method.GET,

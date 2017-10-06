@@ -1,4 +1,4 @@
-package ycagri.challenge.pojo;
+package ycagri.challenge.data;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -16,15 +16,23 @@ import java.util.ArrayList;
  */
 public class Venue implements Parcelable {
 
-    private String mId;
-    private String mName;
-    private String mUrl;
-    private String mFormattedPhone;
-    private String mFacebookProfile;
-    private double mLatitude;
-    private double mLongitude;
-    private String mIconUrl;
-    private ArrayList<String> mPhotosList;
+    private final String mId;
+
+    private final String mName;
+
+    private final String mUrl;
+
+    private final String mFormattedPhone;
+
+    private final String mFacebookProfile;
+
+    private final double mLatitude;
+
+    private final double mLongitude;
+
+    private final String mIconUrl = "";
+
+    private final ArrayList<String> mPhotosList = new ArrayList<>();
 
     private Venue(Parcel in) {
         mId = in.readString();
@@ -34,8 +42,8 @@ public class Venue implements Parcelable {
         mFacebookProfile = in.readString();
         mLatitude = in.readDouble();
         mLongitude = in.readDouble();
-        mIconUrl = in.readString();
-        in.readStringList(mPhotosList);
+        //mIconUrl = in.readString();
+        //in.readStringList(mPhotosList);
     }
 
     public Venue(JSONObject jsonObject) {
@@ -47,23 +55,28 @@ public class Venue implements Parcelable {
         if (contact != null) {
             mFormattedPhone = contact.optString("formattedPhone");
             mFacebookProfile = "http://www.facebook.com/" + contact.optString("facebook");
+        } else {
+            mFormattedPhone = "";
+            mFacebookProfile = "";
         }
 
         JSONObject location = jsonObject.optJSONObject("location");
         if (location != null) {
             mLatitude = location.optDouble("lat");
             mLongitude = location.optDouble("lng");
+        } else {
+            mLatitude = 0;
+            mLongitude = 0;
         }
 
         JSONArray categories = jsonObject.optJSONArray("categories");
         if (categories != null) {
-
             for (int i = 0; i < categories.length(); i++) {
                 JSONObject category = categories.optJSONObject(i);
 
                 if (category.optBoolean("primary")) {
                     JSONObject icon = category.optJSONObject("icon");
-                    mIconUrl = icon.optString("prefix") + "88" + icon.optString("suffix");
+                    //mIconUrl = icon.optString("prefix") + "88" + icon.optString("suffix");
                     break;
                 }
             }
@@ -74,72 +87,36 @@ public class Venue implements Parcelable {
         return mId;
     }
 
-    public void setId(String mId) {
-        this.mId = mId;
-    }
-
     public String getName() {
         return mName;
-    }
-
-    public void setName(String name) {
-        this.mName = name;
     }
 
     public String getUrl() {
         return mUrl;
     }
 
-    public void setUrl(String url) {
-        this.mUrl = url;
-    }
-
     public String getFormattedPhone() {
         return mFormattedPhone;
-    }
-
-    public void setFormattedPhone(String formattedPhone) {
-        this.mFormattedPhone = formattedPhone;
     }
 
     public String getFacebookProfile() {
         return mFacebookProfile;
     }
 
-    public void setFacebookProfile(String facebookProfile) {
-        this.mFacebookProfile = facebookProfile;
-    }
-
     public double getLatitude() {
         return mLatitude;
-    }
-
-    public void setLatitude(double latitude) {
-        this.mLatitude = latitude;
     }
 
     public double getLongitude() {
         return mLongitude;
     }
 
-    public void setLongitude(double longitude) {
-        this.mLongitude = longitude;
-    }
-
     public String getIconUrl() {
         return mIconUrl;
     }
 
-    public void setIconUrl(String iconUrl) {
-        this.mIconUrl = iconUrl;
-    }
-
     public ArrayList<String> getPhotosList() {
         return mPhotosList;
-    }
-
-    public void setPhotosList(ArrayList<String> photosList) {
-        this.mPhotosList = photosList;
     }
 
     @Override

@@ -29,7 +29,7 @@ import ycagri.challenge.R;
 import ycagri.challenge.fragments.DetailFragment;
 import ycagri.challenge.fragments.MasterFragment;
 import ycagri.challenge.interfaces.OnFragmentInteractionListener;
-import ycagri.challenge.pojo.Venue;
+import ycagri.challenge.data.Venue;
 
 /**
  * This class is the only activity that holds fragments. It has different layout implementations

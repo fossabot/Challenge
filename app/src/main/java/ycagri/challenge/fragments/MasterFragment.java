@@ -30,7 +30,7 @@ import java.util.List;
 
 import ycagri.challenge.ChallengeApplication;
 import ycagri.challenge.R;
-import ycagri.challenge.pojo.Venue;
+import ycagri.challenge.data.Venue;
 
 
 /**
