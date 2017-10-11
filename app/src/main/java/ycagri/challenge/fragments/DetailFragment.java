@@ -10,12 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.NetworkImageView;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -23,12 +18,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 
-import ycagri.challenge.ChallengeApplication;
 import ycagri.challenge.R;
 import ycagri.challenge.data.Venue;
 
@@ -94,7 +85,7 @@ public class DetailFragment extends ChallengeFragment implements OnMapReadyCallb
             //mVenue.setPhotosList(new ArrayList<String>());
             mPhotosAdapter = new VenuePhotosPagerAdapter(getContext(), mVenue.getPhotosList());
 
-            ChallengeApplication.getInstance().addToRequestQueue(new JsonObjectRequest(Request.Method.GET,
+            /*ChallengeApplication.getInstance().addToRequestQueue(new JsonObjectRequest(Request.Method.GET,
                     generateRequestUrl(mVenue.getId() + "/photos?"),
                     null, new Response.Listener<JSONObject>() {
                 @Override
@@ -131,7 +122,7 @@ public class DetailFragment extends ChallengeFragment implements OnMapReadyCallb
                     }
                 }
             }, mErrorListener
-            ));
+            ));*/
         } else {
             mProgressBar.setVisibility(View.GONE);
             mPhotosAdapter = new VenuePhotosPagerAdapter(getContext(), mVenue.getPhotosList());
@@ -176,9 +167,9 @@ public class DetailFragment extends ChallengeFragment implements OnMapReadyCallb
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
             View view = mInflater.inflate(R.layout.item_detail_pager, container, false);
-            NetworkImageView imageView = (NetworkImageView) view.findViewById(R.id.iv_pager_item);
-            imageView.setImageUrl(mPhotos.get(position),
-                    ChallengeApplication.getInstance().getImageLoader());
+            //NetworkImageView imageView = (NetworkImageView) view.findViewById(R.id.iv_pager_item);
+            //imageView.setImageUrl(mPhotos.get(position),
+            //        ChallengeApplication.getInstance().getImageLoader());
 
             container.addView(view);
             return view;

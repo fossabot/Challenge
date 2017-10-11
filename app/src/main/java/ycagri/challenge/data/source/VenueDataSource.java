@@ -13,6 +13,5 @@ import ycagri.challenge.data.Venue;
 
 public interface VenueDataSource {
 
-    @NonNull
     Observable<List<Venue>> getVenues();
 }

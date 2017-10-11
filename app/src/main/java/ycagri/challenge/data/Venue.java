@@ -34,6 +34,16 @@ public class Venue implements Parcelable {
 
     private final ArrayList<String> mPhotosList = new ArrayList<>();
 
+    public Venue(String id, String name, String url, String phone, String facebookProfile, double lat, double lon) {
+        mId = id;
+        mName = name;
+        mUrl = url;
+        mFormattedPhone = phone;
+        mFacebookProfile = facebookProfile;
+        mLatitude = lat;
+        mLongitude = lon;
+    }
+
     private Venue(Parcel in) {
         mId = in.readString();
         mName = in.readString();

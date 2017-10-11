@@ -2,16 +2,10 @@ package ycagri.challenge.fragments;
 
 import android.content.Context;
 import android.support.v4.app.Fragment;
-import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.Toast;
-
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 
 import java.util.Calendar;
 
-import ycagri.challenge.R;
 import ycagri.challenge.interfaces.OnFragmentInteractionListener;
 
 /**
@@ -29,14 +23,14 @@ public class ChallengeFragment extends Fragment {
 
     protected OnFragmentInteractionListener mListener;
 
-    protected final Response.ErrorListener mErrorListener = new Response.ErrorListener() {
+    /*protected final Response.ErrorListener mErrorListener = new Response.ErrorListener() {
         @Override
         public void onErrorResponse(VolleyError volleyError) {
             if (mProgressBar != null)
                 mProgressBar.setVisibility(View.GONE);
             Toast.makeText(getActivity(), R.string.request_error, Toast.LENGTH_LONG).show();
         }
-    };
+    };*/
 
     @Override
     public void onAttach(Context context) {

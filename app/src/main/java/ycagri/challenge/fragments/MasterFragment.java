@@ -15,20 +15,10 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
-
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.NetworkImageView;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import ycagri.challenge.ChallengeApplication;
 import ycagri.challenge.R;
 import ycagri.challenge.data.Venue;
 
@@ -118,7 +108,7 @@ public class MasterFragment extends ChallengeFragment {
     }
 
     private void retrieveVenues(Location location) {
-        ChallengeApplication.getInstance().addToRequestQueue(new JsonObjectRequest(Request.Method.GET,
+        /*ChallengeApplication.getInstance().addToRequestQueue(new JsonObjectRequest(Request.Method.GET,
                 generateRequestUrl("search?ll=" + location.getLatitude() + "," + location.getLongitude() + "&"),
                 null, new Response.Listener<JSONObject>() {
             @Override
@@ -144,7 +134,7 @@ public class MasterFragment extends ChallengeFragment {
                 }
             }
         }, mErrorListener
-        ));
+        ));*/
     }
 
     private class MasterListAdapter extends ArrayAdapter<Venue> {
@@ -160,10 +150,10 @@ public class MasterFragment extends ChallengeFragment {
             View view = super.getView(position, convertView, parent);
 
             final Venue venue = getItem(position);
-            NetworkImageView iconIV = (NetworkImageView) view.findViewById(R.id.iv_icon);
+            //NetworkImageView iconIV = (NetworkImageView) view.findViewById(R.id.iv_icon);
             if (venue != null)
-                iconIV.setImageUrl(venue.getIconUrl(), ChallengeApplication.getInstance()
-                        .getImageLoader());
+                //iconIV.setImageUrl(venue.getIconUrl(), ChallengeApplication.getInstance()
+                //        .getImageLoader());
 
             if (view.isActivated())
                 view.setBackgroundResource(R.color.primary_dark);

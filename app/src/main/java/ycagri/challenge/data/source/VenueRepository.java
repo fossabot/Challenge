@@ -8,8 +8,6 @@ import javax.inject.Inject;
 import rx.Observable;
 import ycagri.challenge.data.Venue;
 
-import static dagger.internal.Preconditions.checkNotNull;
-
 /**
  * Created by vayen01 on 06/10/2017.
  */
@@ -35,7 +33,7 @@ public class VenueRepository implements VenueDataSource {
      * By marking the constructor with {@code @Inject}, Dagger will try to inject the dependencies
      * required to create an instance of the TasksRepository. Because {@link VenueDataSource} is an
      * interface, we must provide to Dagger a way to build those arguments, this is done in
-     * {@link TasksRepositoryModule}.
+     * {@link VenueRepositoryModule}.
      * <p>
      * When two arguments or more have the same type, we must provide to Dagger a way to
      * differentiate them. This is done using a qualifier.
@@ -44,10 +42,10 @@ public class VenueRepository implements VenueDataSource {
      * with {@code @Nullable} values.
      */
     @Inject
-    VenueRepository(VenueDataSource tasksRemoteDataSource,
-                    VenueDataSource tasksLocalDataSource) {
-        mVenueRemoteDataSource = tasksRemoteDataSource;
-        mVenueLocalDataSource = tasksLocalDataSource;
+    VenueRepository(@Remote VenueDataSource venueRemoteDataSource,
+                    @Local VenueDataSource venueLocalDataSource) {
+        mVenueRemoteDataSource = venueRemoteDataSource;
+        mVenueLocalDataSource = venueLocalDataSource;
     }
 
     /**
