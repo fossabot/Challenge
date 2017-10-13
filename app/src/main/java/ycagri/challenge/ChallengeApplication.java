@@ -10,9 +10,9 @@ import rx.schedulers.Schedulers;
 import ycagri.challenge.data.source.VenueRepository;
 import ycagri.challenge.di.AppComponent;
 import ycagri.challenge.di.DaggerAppComponent;
+import ycagri.challenge.interfaces.RetrofitApiInterface;
 
 /**
- *
  * @author ycagri
  * @since 10.1.2015.
  */
@@ -28,7 +28,7 @@ public class ChallengeApplication extends DaggerApplication {
         AppComponent appComponent = DaggerAppComponent.builder()
                 .application(this)
                 .scheduler(Schedulers.io())
-                .retrofit(new Retrofit.Builder().baseUrl("https://api.foursquare.com/v2/venues/").build())
+                .retrofit(new Retrofit.Builder().baseUrl("https://api.foursquare.com/v2/").build().create(RetrofitApiInterface.class))
                 .build();
         appComponent.inject(this);
         return appComponent;

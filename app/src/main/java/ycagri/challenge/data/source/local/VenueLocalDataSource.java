@@ -59,7 +59,7 @@ public class VenueLocalDataSource implements VenueDataSource {
 
     @NonNull
     @Override
-    public Observable<List<Venue>> getVenues() {
+    public Observable<List<Venue>> getVenues(String location, String clientId, String clientSecret, String date) {
         return null;
     }
 }
