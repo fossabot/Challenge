@@ -2,15 +2,23 @@ package ycagri.challenge.data.source.remote;
 
 import android.support.annotation.NonNull;
 
-import java.io.IOException;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+
+import org.json.JSONObject;
+
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import io.reactivex.Observable;
 import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
-import rx.Observable;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+import ycagri.challenge.VenueDeserializer;
 import ycagri.challenge.data.Venue;
 import ycagri.challenge.data.source.VenueDataSource;
 import ycagri.challenge.interfaces.RetrofitApiInterface;
@@ -27,19 +35,16 @@ public class VenueRemoteDataSource implements VenueDataSource {
     private final RetrofitApiInterface mRetrofit;
 
     @Inject
-    public VenueRemoteDataSource(@NonNull RetrofitApiInterface retrofit) {
-        this.mRetrofit = checkNotNull(retrofit);
+    public VenueRemoteDataSource(@NonNull Retrofit.Builder retrofitBuilder) {
+        this.mRetrofit = checkNotNull(retrofitBuilder)
+                .addConverterFactory(GsonConverterFactory.create(new GsonBuilder().registerTypeAdapter(new TypeToken<List<Venue>>() {
+                }.getType(), new VenueDeserializer()).create()))
+                .build().create(RetrofitApiInterface.class);
     }
 
     @NonNull
     @Override
     public Observable<List<Venue>> getVenues(String location, String clientId, String clientSecret, String date) {
-        Call<Venue> call = mRetrofit.getVenues(location, clientId, clientSecret, date);
-        try {
-            Response<Venue> venue = call.execute();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return mRetrofit.getVenues(location, clientId, clientSecret, date);
     }
 }

@@ -19,19 +19,5 @@ public final class VenuePersistentContract {
         public static final String VENUE_ID = "venue_id";
 
         public static final String NAME = "name";
-
-        public static final String URL = "url";
-
-        public static final String PHONE = "phone";
-
-        public static final String FACEBOOK_PROFILE = "facebook";
-
-        public static final String LATITUDE = "lat";
-
-        public static final String LONGITUDE = "lon";
-
-        public static final String ICON = "icon";
-
-        public static final String PHOTOS = "photos";
     }
 }

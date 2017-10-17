@@ -9,6 +9,7 @@ import dagger.Component;
 import dagger.android.AndroidInjector;
 import dagger.android.support.AndroidSupportInjectionModule;
 import dagger.android.support.DaggerApplication;
+import retrofit2.Retrofit;
 import rx.Scheduler;
 import ycagri.challenge.ChallengeApplication;
 import ycagri.challenge.data.source.VenueRepositoryModule;
@@ -49,7 +50,7 @@ public interface AppComponent extends AndroidInjector<DaggerApplication> {
         AppComponent.Builder scheduler(Scheduler scheduler);
 
         @BindsInstance
-        AppComponent.Builder retrofit(RetrofitApiInterface retrofit);
+        AppComponent.Builder retrofit(Retrofit.Builder retrofitBuilder);
 
         AppComponent build();
     }

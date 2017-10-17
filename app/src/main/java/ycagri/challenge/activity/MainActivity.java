@@ -157,7 +157,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     protected void onSaveInstanceState(Bundle outState) {
         if (getSupportFragmentManager().getBackStackEntryCount() > 0)
             getSupportFragmentManager().popBackStackImmediate();
-        outState.putParcelable(KEY_SELECTED_VENUE, mSelectedVenue);
+        //outState.putParcelable(KEY_SELECTED_VENUE, mSelectedVenue);
         super.onSaveInstanceState(outState);
     }
 

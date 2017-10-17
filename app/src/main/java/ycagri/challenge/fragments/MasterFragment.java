@@ -59,7 +59,7 @@ public class MasterFragment extends ChallengeFragment {
         mCheckedItemPosition = AbsListView.INVALID_POSITION;
         if (savedInstanceState != null) {
             mCheckedItemPosition = savedInstanceState.getInt(KEY_SELECTED_INDEX, AbsListView.INVALID_POSITION);
-            mVenuesArray = savedInstanceState.getParcelableArrayList(KEY_VENUES);
+            //mVenuesArray = savedInstanceState.getParcelableArrayList(KEY_VENUES);
         } else {
             mVenuesArray = new ArrayList<>();
         }
@@ -97,7 +97,7 @@ public class MasterFragment extends ChallengeFragment {
             outState.putInt(KEY_SELECTED_INDEX, mVenuesLV.getCheckedItemPosition());
         else if (mCheckedItemPosition != AbsListView.INVALID_POSITION)
             outState.putInt(KEY_SELECTED_INDEX, mCheckedItemPosition);
-        outState.putParcelableArrayList(KEY_VENUES, mVenuesArray);
+        //outState.putParcelableArrayList(KEY_VENUES, mVenuesArray);
         super.onSaveInstanceState(outState);
     }
 

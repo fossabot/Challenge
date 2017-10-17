@@ -49,7 +49,7 @@ public class DetailFragment extends ChallengeFragment implements OnMapReadyCallb
     public static DetailFragment newInstance(Venue venue) {
         DetailFragment fragment = new DetailFragment();
         Bundle args = new Bundle();
-        args.putParcelable(ARG_VENUE, venue);
+        //args.putParcelable(ARG_VENUE, venue);
         fragment.setArguments(args);
         return fragment;
     }
@@ -81,9 +81,9 @@ public class DetailFragment extends ChallengeFragment implements OnMapReadyCallb
         mProgressBar = (android.widget.ProgressBar) view.findViewById(R.id.progress_bar);
         mNoPhotosToShow = (TextView) view.findViewById(R.id.no_photos_to_show);
 
-        if (mVenue.getPhotosList() == null) {
+        //if (mVenue.getPhotosList() == null) {
             //mVenue.setPhotosList(new ArrayList<String>());
-            mPhotosAdapter = new VenuePhotosPagerAdapter(getContext(), mVenue.getPhotosList());
+        //    mPhotosAdapter = new VenuePhotosPagerAdapter(getContext(), mVenue.getPhotosList());
 
             /*ChallengeApplication.getInstance().addToRequestQueue(new JsonObjectRequest(Request.Method.GET,
                     generateRequestUrl(mVenue.getId() + "/photos?"),
@@ -123,10 +123,10 @@ public class DetailFragment extends ChallengeFragment implements OnMapReadyCallb
                 }
             }, mErrorListener
             ));*/
-        } else {
-            mProgressBar.setVisibility(View.GONE);
-            mPhotosAdapter = new VenuePhotosPagerAdapter(getContext(), mVenue.getPhotosList());
-        }
+        //} else {
+        //    mProgressBar.setVisibility(View.GONE);
+        //    mPhotosAdapter = new VenuePhotosPagerAdapter(getContext(), mVenue.getPhotosList());
+        //}
 
         photosViewPager.setAdapter(mPhotosAdapter);
 
@@ -147,11 +147,11 @@ public class DetailFragment extends ChallengeFragment implements OnMapReadyCallb
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        LatLng latLng = new LatLng(mVenue.getLatitude(), mVenue.getLongitude());
-        googleMap.addMarker(new MarkerOptions()
-                .position(latLng)
-                .title(mVenue.getName()));
-        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14));
+        //LatLng latLng = new LatLng(mVenue.getLatitude(), mVenue.getLongitude());
+        //googleMap.addMarker(new MarkerOptions()
+        //        .position(latLng)
+        //        .title(mVenue.getName()));
+        //googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14));
     }
 
     private class VenuePhotosPagerAdapter extends PagerAdapter {

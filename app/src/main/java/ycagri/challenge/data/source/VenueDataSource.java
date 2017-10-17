@@ -1,10 +1,8 @@
 package ycagri.challenge.data.source;
 
-import android.support.annotation.NonNull;
-
 import java.util.List;
 
-import rx.Observable;
+import io.reactivex.Observable;
 import ycagri.challenge.data.Venue;
 
 /**

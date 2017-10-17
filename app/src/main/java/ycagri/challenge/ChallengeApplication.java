@@ -6,11 +6,11 @@ import javax.inject.Inject;
 import dagger.android.AndroidInjector;
 import dagger.android.support.DaggerApplication;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import rx.schedulers.Schedulers;
 import ycagri.challenge.data.source.VenueRepository;
 import ycagri.challenge.di.AppComponent;
 import ycagri.challenge.di.DaggerAppComponent;
-import ycagri.challenge.interfaces.RetrofitApiInterface;
 
 /**
  * @author ycagri
@@ -28,7 +28,8 @@ public class ChallengeApplication extends DaggerApplication {
         AppComponent appComponent = DaggerAppComponent.builder()
                 .application(this)
                 .scheduler(Schedulers.io())
-                .retrofit(new Retrofit.Builder().baseUrl("https://api.foursquare.com/v2/").build().create(RetrofitApiInterface.class))
+                .retrofit(new Retrofit.Builder().baseUrl("https://api.foursquare.com/v2/")
+                        .addCallAdapterFactory(RxJava2CallAdapterFactory.create()))
                 .build();
         appComponent.inject(this);
         return appComponent;

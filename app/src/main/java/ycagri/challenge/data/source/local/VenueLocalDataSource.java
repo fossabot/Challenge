@@ -12,7 +12,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import rx.Observable;
+import io.reactivex.Observable;
 import rx.Scheduler;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
@@ -46,14 +46,7 @@ public class VenueLocalDataSource implements VenueDataSource {
 
     @NonNull
     private Venue getVenue(@NonNull Cursor c) {
-        String id = c.getString(c.getColumnIndexOrThrow(VenuePersistentContract.VenueEntry.VENUE_ID));
-        String name = c.getString(c.getColumnIndexOrThrow(VenuePersistentContract.VenueEntry.NAME));
-        String url = c.getString(c.getColumnIndexOrThrow(VenuePersistentContract.VenueEntry.URL));
-        String phone = c.getString(c.getColumnIndexOrThrow(VenuePersistentContract.VenueEntry.PHONE));
-        String profile = c.getString(c.getColumnIndexOrThrow(VenuePersistentContract.VenueEntry.FACEBOOK_PROFILE));
-        double latitude = c.getDouble(c.getColumnIndexOrThrow(VenuePersistentContract.VenueEntry.LATITUDE));
-        double longitude = c.getDouble(c.getColumnIndexOrThrow(VenuePersistentContract.VenueEntry.LONGITUDE));
-        return new Venue(id, name, url, phone, profile, latitude, longitude);
+        return null;
     }
 
 
