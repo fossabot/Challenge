@@ -28,7 +28,8 @@ import ycagri.challenge.interfaces.RetrofitApiInterface;
 @Singleton
 @Component(modules = {ApplicationModule.class,
         AndroidSupportInjectionModule.class,
-        VenueRepositoryModule.class})
+        VenueRepositoryModule.class,
+        ActivityBindingModule.class})
 public interface AppComponent extends AndroidInjector<DaggerApplication> {
 
     void inject(ChallengeApplication application);

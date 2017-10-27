@@ -1,4 +1,4 @@
-package ycagri.challenge.activity;
+package ycagri.challenge.main;
 
 import android.Manifest;
 import android.content.Intent;
@@ -7,29 +7,31 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+
+import javax.inject.Inject;
 
 import ycagri.challenge.R;
+import ycagri.challenge.data.Venue;
 import ycagri.challenge.fragments.DetailFragment;
 import ycagri.challenge.fragments.MasterFragment;
 import ycagri.challenge.interfaces.OnFragmentInteractionListener;
-import ycagri.challenge.data.Venue;
 
 /**
  * This class is the only activity that holds fragments. It has different layout implementations
@@ -41,8 +43,7 @@ import ycagri.challenge.data.Venue;
  * @author ycagri
  * @since 05.04.2017
  */
-public class MainActivity extends AppCompatActivity implements OnFragmentInteractionListener,
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class MainActivity extends AppCompatActivity implements OnFragmentInteractionListener {
 
     private static final String KEY_SELECTED_VENUE = "selected_venue";
 
@@ -51,7 +52,8 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 
     private Venue mSelectedVenue = null;
 
-    private GoogleApiClient mGoogleApiClient;
+    @Inject
+    GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
 
     private final LocationListener mLocationListener = new LocationListener() {
@@ -110,14 +112,6 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         setTitle(R.string.app_name);
-
-        if (mGoogleApiClient == null) {
-            mGoogleApiClient = new GoogleApiClient.Builder(this)
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .addApi(LocationServices.API)
-                    .build();
-        }
 
         if (savedInstanceState == null) {
             int rc = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
@@ -191,21 +185,6 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     }
 
     @Override
-    public void onConnected(@Nullable Bundle bundle) {
-
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-    }
-
-    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CHECK_SETTINGS && resultCode == RESULT_OK) {
             getUserLocation();
@@ -227,9 +206,14 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
                 .addLocationRequest(mLocationRequest);
 
-        PendingResult<LocationSettingsResult> result =
-                LocationServices.SettingsApi.checkLocationSettings(mGoogleApiClient, builder.build());
-        result.setResultCallback(mLocationSettingsCallback);
+        Task<LocationSettingsResponse> result =
+                LocationServices.getSettingsClient(this).checkLocationSettings(builder.build());
+        result.addOnCompleteListener(new OnCompleteListener<LocationSettingsResponse>() {
+            @Override
+            public void onComplete(@NonNull Task<LocationSettingsResponse> task) {
+                
+            }
+        });
     }
 
     /**
