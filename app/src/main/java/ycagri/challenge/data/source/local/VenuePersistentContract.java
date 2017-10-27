@@ -8,7 +8,7 @@ import android.provider.BaseColumns;
 
 public final class VenuePersistentContract {
 
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
 
     public static final String DATABASE_NAME = "Venues.db";
 
@@ -39,22 +39,23 @@ public final class VenuePersistentContract {
         public static final String TIP_COUNT = "tip_count";
 
         public static final String CREATE_TABLE =
-                "CREATE TABLE " +
+                "CREATE TABLE IF NOT EXISTS " +
                         TABLE_NAME + " (" +
-                        _ID + INTEGER_TYPE + " PRIMARY KEY," +
+                        _ID + INTEGER_TYPE + " PRIMARY KEY AUTOINCREMENT," +
                         VENUE_ID + TEXT_TYPE + COMMA_SEP +
                         NAME + TEXT_TYPE + COMMA_SEP +
                         CHECK_IN_COUNT + INTEGER_TYPE + COMMA_SEP +
                         USER_COUNT + INTEGER_TYPE + COMMA_SEP +
                         TIP_COUNT + INTEGER_TYPE + " );";
 
+        public static final String DROP_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
     }
 
     public static abstract class LocationEntry implements BaseColumns {
 
         public static final String TABLE_NAME = "locations";
 
-        public static final String VENUE_ID = "venue_id";
+        public static final String VENUE_ID = "location_venue_id";
 
         public static final String ADDRESS = "address";
 
@@ -69,9 +70,9 @@ public final class VenuePersistentContract {
         public static final String FORMATTED_ADDRESS = "formatted_address";
 
         public static final String CREATE_TABLE =
-                "CREATE TABLE " +
+                "CREATE TABLE IF NOT EXISTS " +
                         TABLE_NAME + " (" +
-                        _ID + INTEGER_TYPE + " PRIMARY KEY," +
+                        _ID + INTEGER_TYPE + " PRIMARY KEY AUTOINCREMENT," +
                         VENUE_ID + INTEGER_TYPE + COMMA_SEP +
                         ADDRESS + TEXT_TYPE + COMMA_SEP +
                         CROSS_STREET + TEXT_TYPE + COMMA_SEP +
@@ -80,34 +81,35 @@ public final class VenuePersistentContract {
                         COUNTRY + TEXT_TYPE + COMMA_SEP +
                         FORMATTED_ADDRESS + TEXT_TYPE + COMMA_SEP +
                         "FOREIGN KEY (" + VENUE_ID + ") REFERENCES " + VenueEntry.TABLE_NAME + "(" + VenueEntry._ID + ") ON DELETE CASCADE);";
+
+        public static final String DROP_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
     }
 
     public static abstract class CategoryEntry implements BaseColumns {
 
         public static final String TABLE_NAME = "categories";
 
-        public static final String VENUE_ID = "venue_id";
+        public static final String VENUE_ID = "category_venue_id";
 
         public static final String CATEGORY_ID = "category_id";
 
-        public static final String NAME = "name";
+        public static final String NAME = "category_name";
 
         public static final String ICON_PREFIX = "icon_prefix";
 
         public static final String ICON_SUFFIX = "icon_suffix";
 
-        public static final String PRIMARY = "primary";
-
         public static final String CREATE_TABLE =
-                "CREATE TABLE " +
+                "CREATE TABLE IF NOT EXISTS " +
                         TABLE_NAME + " (" +
-                        _ID + INTEGER_TYPE + " PRIMARY KEY," +
+                        _ID + INTEGER_TYPE + " PRIMARY KEY AUTOINCREMENT," +
                         VENUE_ID + INTEGER_TYPE + COMMA_SEP +
                         CATEGORY_ID + TEXT_TYPE + COMMA_SEP +
                         NAME + TEXT_TYPE + COMMA_SEP +
                         ICON_PREFIX + TEXT_TYPE + COMMA_SEP +
                         ICON_SUFFIX + TEXT_TYPE + COMMA_SEP +
-                        PRIMARY + INTEGER_TYPE + COMMA_SEP +
                         "FOREIGN KEY (" + VENUE_ID + ") REFERENCES " + VenueEntry.TABLE_NAME + "(" + VenueEntry._ID + ") ON DELETE CASCADE);";
+
+        public static final String DROP_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
     }
 }

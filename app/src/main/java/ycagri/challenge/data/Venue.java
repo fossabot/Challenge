@@ -56,6 +56,16 @@ public class Venue {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Venue && ((Venue) obj).getId().equals(mId);
+    }
+
+    @Override
+    public int hashCode() {
+        return mId.hashCode();
+    }
+
+    @Override
     public String toString() {
         return mName;
     }

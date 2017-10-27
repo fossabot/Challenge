@@ -5,9 +5,9 @@ import javax.inject.Inject;
 
 import dagger.android.AndroidInjector;
 import dagger.android.support.DaggerApplication;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
-import rx.schedulers.Schedulers;
 import ycagri.challenge.data.source.VenueRepository;
 import ycagri.challenge.di.AppComponent;
 import ycagri.challenge.di.DaggerAppComponent;

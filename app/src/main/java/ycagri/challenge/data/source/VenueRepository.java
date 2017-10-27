@@ -16,7 +16,7 @@ public class VenueRepository implements VenueDataSource {
 
     private final VenueDataSource mVenueRemoteDataSource;
 
-    private final VenueDataSource mVenueLocalDataSource;
+    private final LocalDataSource mVenueLocalDataSource;
 
     /**
      * This variable has package local visibility so it can be accessed from tests.
@@ -43,7 +43,7 @@ public class VenueRepository implements VenueDataSource {
      */
     @Inject
     VenueRepository(@Remote VenueDataSource venueRemoteDataSource,
-                    @Local VenueDataSource venueLocalDataSource) {
+                    @Local LocalDataSource venueLocalDataSource) {
         mVenueRemoteDataSource = venueRemoteDataSource;
         mVenueLocalDataSource = venueLocalDataSource;
     }
@@ -53,6 +53,6 @@ public class VenueRepository implements VenueDataSource {
      */
     @Override
     public Observable<List<Venue>> getVenues(String location, String clientId, String clientSecret, String date) {
-        return mVenueLocalDataSource.getVenues(location, clientId, clientSecret, date);
+        return mVenueLocalDataSource.getVenues();
     }
 }

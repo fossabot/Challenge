@@ -16,7 +16,7 @@ abstract public class VenueRepositoryModule {
     @Singleton
     @Binds
     @Local
-    abstract VenueDataSource provideTasksLocalDataSource(VenueLocalDataSource dataSource);
+    abstract LocalDataSource provideTasksLocalDataSource(VenueLocalDataSource dataSource);
 
     @Singleton
     @Binds

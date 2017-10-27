@@ -30,6 +30,9 @@ public class VenueDBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-
+        sqLiteDatabase.execSQL(VenuePersistentContract.CategoryEntry.DROP_TABLE);
+        sqLiteDatabase.execSQL(VenuePersistentContract.LocationEntry.DROP_TABLE);
+        sqLiteDatabase.execSQL(VenuePersistentContract.VenueEntry.DROP_TABLE);
+        onCreate(sqLiteDatabase);
     }
 }
