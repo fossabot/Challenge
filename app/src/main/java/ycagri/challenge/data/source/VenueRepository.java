@@ -49,10 +49,10 @@ public class VenueRepository implements VenueDataSource {
     }
 
     /**
-     * Gets tasks from  local data source (SQLite).
+     * Gets venues from  local data source (SQLite).
      */
     @Override
-    public Observable<List<Venue>> getVenues(String location, String clientId, String clientSecret, String date) {
-        return mVenueLocalDataSource.getVenues();
+    public Observable<List<Venue>> getVenues(String location, String date) {
+        return mVenueRemoteDataSource.getVenues(location, date);
     }
 }

@@ -13,7 +13,6 @@ import io.reactivex.Scheduler;
 import retrofit2.Retrofit;
 import ycagri.challenge.ChallengeApplication;
 import ycagri.challenge.data.source.VenueRepositoryModule;
-import ycagri.challenge.interfaces.RetrofitApiInterface;
 
 /**
  * This is a Dagger component. Refer to {@link ChallengeApplication} for the list of Dagger components
@@ -27,9 +26,9 @@ import ycagri.challenge.interfaces.RetrofitApiInterface;
  */
 @Singleton
 @Component(modules = {ApplicationModule.class,
-        AndroidSupportInjectionModule.class,
         VenueRepositoryModule.class,
-        ActivityBindingModule.class})
+        ActivityBindingModule.class,
+        AndroidSupportInjectionModule.class})
 public interface AppComponent extends AndroidInjector<DaggerApplication> {
 
     void inject(ChallengeApplication application);

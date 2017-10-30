@@ -1,15 +1,15 @@
 package ycagri.challenge.main;
 
-import android.content.Context;
+import android.databinding.BaseObservable;
 
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationRequest;
 
 import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;
-import io.reactivex.annotations.NonNull;
+import dagger.android.ContributesAndroidInjector;
 import ycagri.challenge.di.ActivityScoped;
+import ycagri.challenge.di.FragmentScoped;
 
 /**
  * Created by vayen01 on 27/10/2017.
@@ -17,11 +17,22 @@ import ycagri.challenge.di.ActivityScoped;
 @Module
 public abstract class MainActivityModule {
 
+    @FragmentScoped
+    @ContributesAndroidInjector
+    abstract MasterFragment masterFragment();
+
+    @ActivityScoped
+    @Binds
+    abstract BaseObservable mainViewModule(MasterViewModel masterViewModel);
+
     @ActivityScoped
     @Provides
-    GoogleApiClient provideGoogleApiClient(@NonNull Context context) {
-        return new GoogleApiClient.Builder(context)
-                .addApi(LocationServices.API)
-                .build();
+    static LocationRequest provideLocationRequest() {
+        LocationRequest locationRequest = new LocationRequest();
+        locationRequest.setInterval(10000);
+        locationRequest.setFastestInterval(5000);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        return locationRequest;
     }
 }

@@ -17,6 +17,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import ycagri.challenge.VenueDeserializer;
 import ycagri.challenge.data.Venue;
@@ -31,6 +32,9 @@ import static dagger.internal.Preconditions.checkNotNull;
 @Singleton
 public class VenueRemoteDataSource implements VenueDataSource {
 
+    private static final String CLIENT_ID = "PWRC42LMLFLMEIPL05NKAQP31TG3I4XDZGPTAYSYJSBGFIGI";
+    private static final String CLIENT_SECRET = "FT2E3K22SAYMPRWY0QARIQ0OKKVFOGVLGR1ZFBFPZ2CPVTVH";
+
     @NonNull
     private final RetrofitApiInterface mRetrofit;
 
@@ -39,12 +43,13 @@ public class VenueRemoteDataSource implements VenueDataSource {
         this.mRetrofit = checkNotNull(retrofitBuilder)
                 .addConverterFactory(GsonConverterFactory.create(new GsonBuilder().registerTypeAdapter(new TypeToken<List<Venue>>() {
                 }.getType(), new VenueDeserializer()).create()))
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build().create(RetrofitApiInterface.class);
     }
 
     @NonNull
     @Override
-    public Observable<List<Venue>> getVenues(String location, String clientId, String clientSecret, String date) {
-        return mRetrofit.getVenues(location, clientId, clientSecret, date);
+    public Observable<List<Venue>> getVenues(String location, String date) {
+        return mRetrofit.getVenues(location, CLIENT_ID, CLIENT_SECRET, date);
     }
 }

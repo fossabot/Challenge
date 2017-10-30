@@ -1,4 +1,4 @@
-package ycagri.challenge.fragments;
+package ycagri.challenge.main;
 
 import android.content.Context;
 import android.support.v4.app.Fragment;
@@ -47,17 +47,5 @@ public class ChallengeFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
-    }
-
-    protected String generateRequestUrl(String url) {
-
-        Calendar cal = Calendar.getInstance();
-        int year = cal.get(Calendar.YEAR);
-        int month = cal.get(Calendar.MONTH) + 1;
-        int day = cal.get(Calendar.DAY_OF_MONTH);
-        String date = year + (month < 10 ? "0" + month : "" + month) + (day < 10 ? "0" + day : "" + day);
-
-        return REQUEST_URL_BASE + url + "client_id=" + CLIENT_ID + "&client_secret=" + CLIENT_SECRET + "&v=" + date;
-
     }
 }

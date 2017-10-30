@@ -29,9 +29,6 @@ import static org.hamcrest.Matchers.hasSize;
 @LargeTest
 public class VenueRemoteDataSourceTest {
 
-    private static final String CLIENT_ID = "PWRC42LMLFLMEIPL05NKAQP31TG3I4XDZGPTAYSYJSBGFIGI";
-    private static final String CLIENT_SECRET = "FT2E3K22SAYMPRWY0QARIQ0OKKVFOGVLGR1ZFBFPZ2CPVTVH";
-
     private VenueRemoteDataSource mRemoteDataSource;
 
     private Scheduler mScheduler;
@@ -58,7 +55,7 @@ public class VenueRemoteDataSourceTest {
         String date = year + (month < 10 ? "0" + month : "" + month) + (day < 10 ? "0" + day : "" + day);
 
         TestObserver<List<Venue>> o = new TestObserver<>();
-        mRemoteDataSource.getVenues("31,29", CLIENT_ID, CLIENT_SECRET, date)
+        mRemoteDataSource.getVenues("31,29", date)
                 .subscribe(o);
         List<List<Venue>> venues = o.values();
         assertThat(venues, hasSize(1));
