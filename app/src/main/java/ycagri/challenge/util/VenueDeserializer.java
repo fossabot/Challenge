@@ -1,4 +1,4 @@
-package ycagri.challenge;
+package ycagri.challenge.util;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonDeserializationContext;

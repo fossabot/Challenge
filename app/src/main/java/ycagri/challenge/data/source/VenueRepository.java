@@ -7,6 +7,7 @@ import javax.inject.Inject;
 
 import io.reactivex.Observable;
 import ycagri.challenge.data.Venue;
+import ycagri.challenge.data.VenuePhoto;
 
 /**
  * Created by vayen01 on 06/10/2017.
@@ -54,5 +55,10 @@ public class VenueRepository implements VenueDataSource {
     @Override
     public Observable<List<Venue>> getVenues(String location, String date) {
         return mVenueRemoteDataSource.getVenues(location, date);
+    }
+
+    @Override
+    public Observable<List<VenuePhoto>> getVenuePhotos(String venueId, String date) {
+        return mVenueRemoteDataSource.getVenuePhotos(venueId, date);
     }
 }

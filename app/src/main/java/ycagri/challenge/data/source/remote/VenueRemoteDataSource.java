@@ -5,21 +5,18 @@ import android.support.annotation.NonNull;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
-import org.json.JSONObject;
-
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import io.reactivex.Observable;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
-import ycagri.challenge.VenueDeserializer;
+import ycagri.challenge.data.VenuePhoto;
+import ycagri.challenge.util.PhotoDeserializer;
+import ycagri.challenge.util.VenueDeserializer;
 import ycagri.challenge.data.Venue;
 import ycagri.challenge.data.source.VenueDataSource;
 import ycagri.challenge.interfaces.RetrofitApiInterface;
@@ -41,8 +38,12 @@ public class VenueRemoteDataSource implements VenueDataSource {
     @Inject
     public VenueRemoteDataSource(@NonNull Retrofit.Builder retrofitBuilder) {
         this.mRetrofit = checkNotNull(retrofitBuilder)
-                .addConverterFactory(GsonConverterFactory.create(new GsonBuilder().registerTypeAdapter(new TypeToken<List<Venue>>() {
-                }.getType(), new VenueDeserializer()).create()))
+                .addConverterFactory(GsonConverterFactory.create(new GsonBuilder()
+                        .registerTypeAdapter(new TypeToken<List<Venue>>() {
+                        }.getType(), new VenueDeserializer())
+                        .registerTypeAdapter(new TypeToken<List<VenuePhoto>>() {
+                        }.getType(), new PhotoDeserializer())
+                        .create()))
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build().create(RetrofitApiInterface.class);
     }
@@ -51,5 +52,10 @@ public class VenueRemoteDataSource implements VenueDataSource {
     @Override
     public Observable<List<Venue>> getVenues(String location, String date) {
         return mRetrofit.getVenues(location, CLIENT_ID, CLIENT_SECRET, date);
+    }
+
+    @Override
+    public Observable<List<VenuePhoto>> getVenuePhotos(String venueId, String date) {
+        return mRetrofit.getVenuePhotos(venueId, CLIENT_ID, CLIENT_SECRET, date);
     }
 }

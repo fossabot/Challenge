@@ -15,12 +15,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
-import rx.Scheduler;
 import ycagri.challenge.data.Venue;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
+import ycagri.challenge.data.VenuePhoto;
 
 /**
  * Created by vayen01 on 13/10/2017.
@@ -29,9 +25,11 @@ import static org.hamcrest.Matchers.hasSize;
 @LargeTest
 public class VenueRemoteDataSourceTest {
 
-    private VenueRemoteDataSource mRemoteDataSource;
+    private static final String PHOTO_ID = "51d47c3b498e0edecfc55df9";
+    private static final int PHOTO_WIDTH = 717;
+    private static final int PHOTO_HEIGHT = 959;
 
-    private Scheduler mScheduler;
+    private VenueRemoteDataSource mRemoteDataSource;
 
     @Before
     public void setup() {
@@ -57,9 +55,25 @@ public class VenueRemoteDataSourceTest {
         TestObserver<List<Venue>> o = new TestObserver<>();
         mRemoteDataSource.getVenues("31,29", date)
                 .subscribe(o);
-        List<List<Venue>> venues = o.values();
-        assertThat(venues, hasSize(1));
-        assertThat(venues.get(0), hasSize(3));
-        assertThat(venues.get(0).get(0).getName(), equalTo("Coffe Shop Alsahel"));
+
+        o.assertValue(venues12 -> venues12.size() == 3);
+        o.assertValue(venues1 -> venues1.get(0).getName().equals("Coffe Shop Alsahel"));
+    }
+
+    @Test
+    public void getPhotos() {
+        Calendar cal = Calendar.getInstance();
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH) + 1;
+        int day = cal.get(Calendar.DAY_OF_MONTH);
+        String date = year + (month < 10 ? "0" + month : "" + month) + (day < 10 ? "0" + day : "" + day);
+
+        TestObserver<List<VenuePhoto>> o = new TestObserver<>();
+        mRemoteDataSource.getVenuePhotos(PHOTO_ID, date)
+                .subscribe(o);
+
+        o.assertValue(venuePhotos -> venuePhotos.size() == 1);
+        o.assertValue(venuePhotos -> venuePhotos.get(0).getWidth() == PHOTO_WIDTH &&
+                venuePhotos.get(0).getHeight() == PHOTO_HEIGHT);
     }
 }
