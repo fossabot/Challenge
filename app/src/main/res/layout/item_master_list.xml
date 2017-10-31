@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
@@ -18,7 +19,9 @@
             android:id="@+id/iv_icon"
             android:layout_width="@dimen/icon_width"
             android:layout_height="@dimen/icon_height"
-            android:background="@color/primary_dark" />
+            android:background="@color/primary_dark"
+            android:contentDescription="@android:string/untitled"
+            app:url="@{viewModel.url}" />
 
         <TextView
             style="@style/Base.TextAppearance.AppCompat.Medium"

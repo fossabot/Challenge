@@ -2,6 +2,9 @@ package ycagri.challenge.util;
 
 import android.databinding.BindingAdapter;
 import android.support.v7.widget.RecyclerView;
+import android.widget.ImageView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -18,5 +21,10 @@ public class BindingUtils {
         if (adapter != null) {
             adapter.replaceData(items);
         }
+    }
+
+    @BindingAdapter("url")
+    public static void setUrl(ImageView imageView, String url) {
+        Picasso.with(imageView.getContext()).load(url).into(imageView);
     }
 }
