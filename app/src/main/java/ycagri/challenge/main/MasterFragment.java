@@ -35,11 +35,11 @@ import ycagri.challenge.util.BindingRecyclerAdapter;
 @ActivityScoped
 public class MasterFragment extends DaggerFragment {
 
-    private static final String KEY_VENUES = "venues";
-    private static final String KEY_SELECTED_INDEX = "selected_index";
-
     @Inject
     MasterViewModel mViewModel;
+
+    @Inject
+    VenueSelectionNavigator mNavigator;
 
     @Inject
     public MasterFragment() {
@@ -68,16 +68,6 @@ public class MasterFragment extends DaggerFragment {
         mViewModel.getUserLocation(getContext());
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        //if (mVenuesLV.getCheckedItemPosition() != AbsListView.INVALID_POSITION)
-        //    outState.putInt(KEY_SELECTED_INDEX, mVenuesLV.getCheckedItemPosition());
-        //else if (mCheckedItemPosition != AbsListView.INVALID_POSITION)
-        //    outState.putInt(KEY_SELECTED_INDEX, mCheckedItemPosition);
-        //outState.putParcelableArrayList(KEY_VENUES, mVenuesArray);
-        super.onSaveInstanceState(outState);
-    }
-
     private class VenueAdapter extends BindingRecyclerAdapter<Venue, VenueViewHolder> {
 
         private VenueAdapter(List<Venue> items) {
@@ -92,7 +82,7 @@ public class MasterFragment extends DaggerFragment {
         @Override
         public void onBindViewHolder(VenueViewHolder holder, int position) {
             ItemMasterListBinding binding = DataBindingUtil.getBinding(holder.itemView);
-            binding.setViewModel(new VenueItemBinding(mItems.get(position)));
+            binding.setViewModel(new VenueItemBinding(mItems.get(position), mNavigator));
         }
     }
 

@@ -16,8 +16,11 @@ public class VenueItemBinding extends BaseObservable {
 
     private final Venue mVenue;
 
-    public VenueItemBinding(Venue venue) {
-        this.mVenue = checkNotNull(venue);
+    private final VenueSelectionNavigator mNavigator;
+
+    public VenueItemBinding(Venue venue, VenueSelectionNavigator navigator) {
+        mVenue = checkNotNull(venue);
+        mNavigator = checkNotNull(navigator);
     }
 
     @Bindable
@@ -34,5 +37,9 @@ public class VenueItemBinding extends BaseObservable {
         }
 
         return iconUrl;
+    }
+
+    public void onVenueClick() {
+        mNavigator.onVenueSelected(mVenue.getId());
     }
 }

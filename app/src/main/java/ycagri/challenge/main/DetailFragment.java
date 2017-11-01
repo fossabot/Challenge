@@ -1,24 +1,35 @@
 package ycagri.challenge.main;
 
 import android.content.Context;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.view.PagerAdapter;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.TextView;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import javax.inject.Inject;
+
+import dagger.Subcomponent;
+import dagger.android.AndroidInjection;
+import dagger.android.AndroidInjector;
+import dagger.android.support.AndroidSupportInjection;
+import dagger.android.support.DaggerFragment;
 import ycagri.challenge.R;
-import ycagri.challenge.data.Venue;
+import ycagri.challenge.data.VenuePhoto;
+import ycagri.challenge.databinding.FragmentDetailBinding;
+import ycagri.challenge.databinding.ItemDetailPagerBinding;
+import ycagri.challenge.util.BindingPagerAdapter;
 
 /**
  * Displays detail information about selected venue. Consists of a {@link ViewPager} that displays
@@ -27,26 +38,24 @@ import ycagri.challenge.data.Venue;
  * @author ycagri
  * @since 04.05.2017
  */
-public class DetailFragment extends ChallengeFragment implements OnMapReadyCallback {
+public class DetailFragment extends DaggerFragment implements OnMapReadyCallback {
     // the fragment initialization parameters, e.g. ARG_VENUE
-    private static final String ARG_VENUE = "venue";
+    private static final String ARG_VENUE_ID = "venue_id";
 
-    private Venue mVenue;
-
-    private TextView mNoPhotosToShow;
-    private VenuePhotosPagerAdapter mPhotosAdapter;
+    @Inject
+    DetailViewModel mViewModel;
 
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param venue Parameter 1.
+     * @param venueId Foursquare id of the selected venue.
      * @return A new instance of fragment DetailFragment.
      */
-    public static DetailFragment newInstance(Venue venue) {
+    public static DetailFragment newInstance(String venueId) {
         DetailFragment fragment = new DetailFragment();
         Bundle args = new Bundle();
-        //args.putParcelable(ARG_VENUE, venue);
+        args.putString(ARG_VENUE_ID, venueId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -56,90 +65,32 @@ public class DetailFragment extends ChallengeFragment implements OnMapReadyCallb
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mVenue = getArguments().getParcelable(ARG_VENUE);
-        }
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_detail, container, false);
+        return FragmentDetailBinding.inflate(inflater, container, false).getRoot();
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        ViewPager photosViewPager = (ViewPager) view.findViewById(R.id.vp_venue_photos);
-        mProgressBar = (android.widget.ProgressBar) view.findViewById(R.id.progress_bar);
-        mNoPhotosToShow = (TextView) view.findViewById(R.id.no_photos_to_show);
+        FragmentDetailBinding binding = DataBindingUtil.getBinding(view);
 
-        //if (mVenue.getPhotosList() == null) {
-            //mVenue.setPhotosList(new ArrayList<String>());
-        //    mPhotosAdapter = new VenuePhotosPagerAdapter(getContext(), mVenue.getPhotosList());
+        binding.vpVenuePhotos.setAdapter(new VenuePhotosPagerAdapter(new ArrayList<>()));
 
-            /*ChallengeApplication.getInstance().addToRequestQueue(new JsonObjectRequest(Request.Method.GET,
-                    generateRequestUrl(mVenue.getId() + "/photos?"),
-                    null, new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject jsonObject) {
-                    mProgressBar.setVisibility(View.GONE);
-                    int resultCode = jsonObject.optJSONObject("meta").optInt("code");
-
-                    if (resultCode == 200) {
-                        JSONObject response = jsonObject.optJSONObject("response");
-                        if (response != null) {
-                            JSONArray items = response.optJSONObject("photos").optJSONArray("items");
-
-                            if (items != null) {
-
-                                for (int i = 0; i < items.length(); i++) {
-                                    JSONObject photo = items.optJSONObject(i);
-
-                                    if (photo != null) {
-                                        String photoUrl = photo.optString("prefix") + photo.optInt("width")
-                                                + "x" + photo.optInt("height") + photo.optString("suffix");
-                                        mVenue.getPhotosList().add(photoUrl);
-                                    }
-                                }
-                                if (mVenue.getPhotosList().isEmpty()) {
-                                    mNoPhotosToShow.setVisibility(View.VISIBLE);
-                                } else {
-                                    mPhotosAdapter.notifyDataSetChanged();
-                                }
-                            }
-                        }
-                    } else {
-                        Toast.makeText(getActivity(), R.string.http_error, Toast.LENGTH_LONG).show();
-                        mNoPhotosToShow.setVisibility(View.VISIBLE);
-                    }
-                }
-            }, mErrorListener
-            ));*/
-        //} else {
-        //    mProgressBar.setVisibility(View.GONE);
-        //    mPhotosAdapter = new VenuePhotosPagerAdapter(getContext(), mVenue.getPhotosList());
-        //}
-
-        photosViewPager.setAdapter(mPhotosAdapter);
-
-        mListener.setToolbarTitle(mVenue.getName());
+        String venueId = "";
+        if (getArguments() != null) {
+            venueId = getArguments().getString(ARG_VENUE_ID);
+        }
+        mViewModel.setVenueId(venueId);
+        binding.setViewModel(mViewModel);
 
         SupportMapFragment mapFragment = new SupportMapFragment();
         mapFragment.getMapAsync(this);
         getChildFragmentManager().beginTransaction()
                 .replace(R.id.map_fragment_container, mapFragment)
                 .commit();
-    }
-
-    @Override
-    public void onDetach() {
-        mListener.setToolbarTitle(getString(R.string.app_name));
-        super.onDetach();
     }
 
     @Override
@@ -151,40 +102,23 @@ public class DetailFragment extends ChallengeFragment implements OnMapReadyCallb
         //googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14));
     }
 
-    private class VenuePhotosPagerAdapter extends PagerAdapter {
+    private class VenuePhotosPagerAdapter extends BindingPagerAdapter<VenuePhoto> {
 
-        private final LayoutInflater mInflater;
-        private final ArrayList<String> mPhotos;
-
-        VenuePhotosPagerAdapter(Context context, ArrayList<String> photos) {
-            mInflater = LayoutInflater.from(context);
-            mPhotos = photos;
+        private VenuePhotosPagerAdapter(List<VenuePhoto> items) {
+            super(items);
         }
 
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
-            View view = mInflater.inflate(R.layout.item_detail_pager, container, false);
-            //NetworkImageView imageView = (NetworkImageView) view.findViewById(R.id.iv_pager_item);
-            //imageView.setImageUrl(mPhotos.get(position),
-            //        ChallengeApplication.getInstance().getImageLoader());
-
-            container.addView(view);
-            return view;
+            ItemDetailPagerBinding binding = ItemDetailPagerBinding.inflate(LayoutInflater.from(container.getContext()), container, false);
+            binding.setViewModel(new VenuePhotoItemBinding(mItems.get(position)));
+            container.addView(binding.getRoot());
+            return binding.getRoot();
         }
 
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
             container.removeView((FrameLayout) object);
-        }
-
-        @Override
-        public int getCount() {
-            return mPhotos.size();
-        }
-
-        @Override
-        public boolean isViewFromObject(View view, Object object) {
-            return view == object;
         }
     }
 }

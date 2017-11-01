@@ -1,6 +1,7 @@
 package ycagri.challenge.main;
 
 import android.databinding.BaseObservable;
+import android.os.Bundle;
 
 import com.google.android.gms.location.LocationRequest;
 
@@ -21,6 +22,16 @@ public abstract class MainActivityModule {
     @ContributesAndroidInjector
     abstract MasterFragment masterFragment();
 
+    @FragmentScoped
+    @ContributesAndroidInjector
+    abstract DetailFragment detailFragment();
+
+    @Binds
+    abstract String provideVenueId(String venueId);
+
+    @Binds
+    abstract BaseObservable detailViewModel(DetailViewModel detailViewModel);
+
     @ActivityScoped
     @Binds
     abstract BaseObservable mainViewModule(MasterViewModel masterViewModel);
@@ -35,4 +46,8 @@ public abstract class MainActivityModule {
 
         return locationRequest;
     }
+
+    @ActivityScoped
+    @Binds
+    abstract VenueSelectionNavigator provideVenueSelectionNavigator(MainActivity activity);
 }
