@@ -18,8 +18,6 @@ import ycagri.challenge.di.DaggerAppComponent;
  */
 public class ChallengeApplication extends DaggerApplication {
 
-    private static final String TAG = ChallengeApplication.class.getSimpleName();
-
     @Inject
     VenueRepository mVenueRepository;
 

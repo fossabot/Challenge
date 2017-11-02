@@ -1,26 +1,18 @@
 package ycagri.challenge.main;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.IntentSender;
-import android.content.pm.PackageManager;
 import android.databinding.BaseObservable;
 import android.databinding.ObservableArrayList;
 import android.databinding.ObservableList;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResolvableApiException;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
-import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.tasks.Task;
 
@@ -97,45 +89,40 @@ public class MasterViewModel extends BaseObservable {
     }
 
     private void getLocation(Context context) {
-        int rc = ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION);
+        LocationServices.getFusedLocationProviderClient(context).getLastLocation()
+                .addOnCompleteListener(task1 -> {
+                    if (task1.isSuccessful()) {
+                        Calendar cal = Calendar.getInstance();
+                        int year = cal.get(Calendar.YEAR);
+                        int month = cal.get(Calendar.MONTH) + 1;
+                        int day = cal.get(Calendar.DAY_OF_MONTH);
+                        String date = year + (month < 10 ? "0" + month : "" + month) + (day < 10 ? "0" + day : "" + day);
 
-        if (rc == PackageManager.PERMISSION_GRANTED) {
-            LocationServices.getFusedLocationProviderClient(context).getLastLocation()
-                    .addOnCompleteListener(task1 -> {
-                        if (task1.isSuccessful()) {
-                            String location = task1.getResult().getLatitude() + "," + task1.getResult().getLongitude();
-                            Calendar cal = Calendar.getInstance();
-                            int year = cal.get(Calendar.YEAR);
-                            int month = cal.get(Calendar.MONTH) + 1;
-                            int day = cal.get(Calendar.DAY_OF_MONTH);
-                            String date = year + (month < 10 ? "0" + month : "" + month) + (day < 10 ? "0" + day : "" + day);
+                        mVenueRepository.getVenues(task1.getResult().getLatitude(), task1.getResult().getLongitude(), date)
+                                .subscribeOn(Schedulers.io())
+                                .subscribe(new Observer<List<Venue>>() {
+                                    @Override
+                                    public void onSubscribe(Disposable d) {
 
-                            mVenueRepository.getVenues(location, date)
-                                    .subscribeOn(Schedulers.io())
-                                    .subscribe(new Observer<List<Venue>>() {
-                                        @Override
-                                        public void onSubscribe(Disposable d) {
+                                    }
 
-                                        }
+                                    @Override
+                                    public void onNext(List<Venue> v) {
+                                        venues.clear();
+                                        venues.addAll(v);
+                                    }
 
-                                        @Override
-                                        public void onNext(List<Venue> v) {
-                                            venues.clear();
-                                            venues.addAll(v);
-                                        }
+                                    @Override
+                                    public void onError(Throwable e) {
+                                        e.printStackTrace();
+                                    }
 
-                                        @Override
-                                        public void onError(Throwable e) {
-                                            e.printStackTrace();
-                                        }
+                                    @Override
+                                    public void onComplete() {
 
-                                        @Override
-                                        public void onComplete() {
-
-                                        }
-                                    });
-                        }
-                    });
-        }
+                                    }
+                                });
+                    }
+                });
     }
 }

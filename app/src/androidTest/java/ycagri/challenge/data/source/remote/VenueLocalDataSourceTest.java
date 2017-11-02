@@ -9,6 +9,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.reactivex.Scheduler;
 import io.reactivex.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.observers.TestObserver;
@@ -44,6 +47,7 @@ public class VenueLocalDataSourceTest {
 
     @Test
     public void insertVenue() {
+        List<Venue> venueList = new ArrayList<>();
         Venue venue = new Venue("venue_id_1", "Venue 1",
                 new VenueLocation(
                         "Address",
@@ -54,8 +58,9 @@ public class VenueLocalDataSourceTest {
                 new VenueCategory[]{
                         new VenueCategory("venue_category_1", "Category 1", new CategoryIcon("prefix", "suffix"), true)
                 });
+        venueList.add(venue);
 
-        mLocalDataSource.insertVenue(venue).subscribe();
+        mLocalDataSource.insertVenues(venueList).subscribe();
 
         TestObserver<Venue> venueTestObserver = new TestObserver<>();
         mLocalDataSource.getVenueById(venue.getId()).subscribe(venueTestObserver);

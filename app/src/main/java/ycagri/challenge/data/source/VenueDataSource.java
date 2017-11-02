@@ -12,7 +12,7 @@ import ycagri.challenge.data.VenuePhoto;
 
 public interface VenueDataSource {
 
-    Observable<List<Venue>> getVenues(String location, String date);
+    Observable<List<Venue>> getVenues(double latitude, double longitude, String date);
 
     Observable<List<VenuePhoto>> getVenuePhotos(String venueId, String date);
 }

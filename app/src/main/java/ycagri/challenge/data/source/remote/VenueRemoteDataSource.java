@@ -50,8 +50,8 @@ public class VenueRemoteDataSource implements VenueDataSource {
 
     @NonNull
     @Override
-    public Observable<List<Venue>> getVenues(String location, String date) {
-        return mRetrofit.getVenues(location, CLIENT_ID, CLIENT_SECRET, date);
+    public Observable<List<Venue>> getVenues(double latitude, double longitude, String date) {
+        return mRetrofit.getVenues(latitude + "," + longitude, CLIENT_ID, CLIENT_SECRET, date);
     }
 
     @Override

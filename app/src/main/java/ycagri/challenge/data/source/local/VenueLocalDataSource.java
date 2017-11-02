@@ -102,9 +102,9 @@ public class VenueLocalDataSource implements LocalDataSource {
     }
 
     @Override
-    public Observable insertVenue(Venue venue) {
+    public Observable<List<Venue>> insertVenues(List<Venue> venues) {
         return Observable.using(mDatabaseHelper::newTransaction,
-                transaction -> inTransactionInsert(venue, transaction),
+                transaction -> inTransactionInsert(venues, transaction),
                 BriteDatabase.Transaction::end);
     }
 
@@ -133,21 +133,22 @@ public class VenueLocalDataSource implements LocalDataSource {
     }
 
     @NonNull
-    private Observable<Venue> inTransactionInsert(@NonNull Venue venue,
-                                                  @NonNull BriteDatabase.Transaction transaction) {
-        checkNotNull(venue);
+    private Observable<List<Venue>> inTransactionInsert(@NonNull List<Venue> venues,
+                                                        @NonNull BriteDatabase.Transaction transaction) {
+        checkNotNull(venues);
         checkNotNull(transaction);
 
-        return Observable.just(venue)
+        return Observable.fromArray(venues.toArray(new Venue[venues.size()]))
                 .doOnNext(v -> {
                     ContentValues values = toContentValues(v);
                     long id = mDatabaseHelper.insert(VenuePersistentContract.VenueEntry.TABLE_NAME, values);
-                    mDatabaseHelper.insert(VenuePersistentContract.LocationEntry.TABLE_NAME, toContentValues(venue.getLocation(), id));
-                    for (VenueCategory c : venue.getCategories())
+                    mDatabaseHelper.insert(VenuePersistentContract.LocationEntry.TABLE_NAME, toContentValues(v.getLocation(), id));
+                    for (VenueCategory c : v.getCategories())
                         if (c.isPrimary())
                             mDatabaseHelper.insert(VenuePersistentContract.CategoryEntry.TABLE_NAME, toContentValues(c, id));
                 })
-                .doOnComplete(transaction::markSuccessful);
+                .doOnComplete(transaction::markSuccessful)
+                .toList().toObservable();
     }
 
     private ContentValues toContentValues(Venue venue) {

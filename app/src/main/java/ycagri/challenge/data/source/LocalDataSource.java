@@ -2,7 +2,6 @@ package ycagri.challenge.data.source;
 
 import java.util.List;
 
-import io.reactivex.Completable;
 import io.reactivex.Observable;
 import ycagri.challenge.data.Venue;
 
@@ -14,7 +13,7 @@ public interface LocalDataSource {
 
     Observable<List<Venue>> getVenues();
 
-    Observable insertVenue(Venue venue);
+    Observable<List<Venue>> insertVenues(List<Venue> venue);
 
     Observable<Venue> getVenueById(String id);
 

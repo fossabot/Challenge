@@ -53,7 +53,7 @@ public class VenueRemoteDataSourceTest {
         String date = year + (month < 10 ? "0" + month : "" + month) + (day < 10 ? "0" + day : "" + day);
 
         TestObserver<List<Venue>> o = new TestObserver<>();
-        mRemoteDataSource.getVenues("31,29", date)
+        mRemoteDataSource.getVenues(31d, 29d, date)
                 .subscribe(o);
 
         o.assertValue(venues12 -> venues12.size() == 3);

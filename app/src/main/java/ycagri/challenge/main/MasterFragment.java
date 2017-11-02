@@ -1,9 +1,13 @@
 package ycagri.challenge.main;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -35,6 +39,8 @@ import ycagri.challenge.util.BindingRecyclerAdapter;
 @ActivityScoped
 public class MasterFragment extends DaggerFragment {
 
+    private static final int RC_LOCATION_LISTENER = 100;
+
     @Inject
     MasterViewModel mViewModel;
 
@@ -65,7 +71,28 @@ public class MasterFragment extends DaggerFragment {
         binding.rvMasterList.setAdapter(new VenueAdapter(new ArrayList<>()));
 
         binding.setViewModel(mViewModel);
-        mViewModel.getUserLocation(getContext());
+        int rc = ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION);
+        if (rc == PackageManager.PERMISSION_GRANTED)
+            mViewModel.getUserLocation(getContext());
+        else
+            requestLocationPermission();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == RC_LOCATION_LISTENER && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            mViewModel.getUserLocation(getContext());
+        }
+    }
+
+    private void requestLocationPermission() {
+        final String[] permissions = new String[]{Manifest.permission.ACCESS_FINE_LOCATION};
+
+        if (!shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
+            requestPermissions(permissions, RC_LOCATION_LISTENER);
+        }
     }
 
     private class VenueAdapter extends BindingRecyclerAdapter<Venue, VenueViewHolder> {

@@ -20,6 +20,7 @@ public class VenueDBHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(VenuePersistentContract.VenueEntry.CREATE_TABLE);
         sqLiteDatabase.execSQL(VenuePersistentContract.LocationEntry.CREATE_TABLE);
         sqLiteDatabase.execSQL(VenuePersistentContract.CategoryEntry.CREATE_TABLE);
+        sqLiteDatabase.execSQL(VenuePersistentContract.VenuePhotoEntry.CREATE_TABLE);
     }
 
     @Override
@@ -32,7 +33,9 @@ public class VenueDBHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
         sqLiteDatabase.execSQL(VenuePersistentContract.CategoryEntry.DROP_TABLE);
         sqLiteDatabase.execSQL(VenuePersistentContract.LocationEntry.DROP_TABLE);
+        sqLiteDatabase.execSQL(VenuePersistentContract.VenuePhotoEntry.DROP_TABLE);
         sqLiteDatabase.execSQL(VenuePersistentContract.VenueEntry.DROP_TABLE);
+
         onCreate(sqLiteDatabase);
     }
 }

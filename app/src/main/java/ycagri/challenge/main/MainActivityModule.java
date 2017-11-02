@@ -1,7 +1,6 @@
 package ycagri.challenge.main;
 
 import android.databinding.BaseObservable;
-import android.os.Bundle;
 
 import com.google.android.gms.location.LocationRequest;
 
@@ -49,5 +48,5 @@ public abstract class MainActivityModule {
 
     @ActivityScoped
     @Binds
-    abstract VenueSelectionNavigator provideVenueSelectionNavigator(MainActivity activity);
+    abstract VenueSelectionNavigator provideFragmentInteractionListener(MainActivity activity);
 }
