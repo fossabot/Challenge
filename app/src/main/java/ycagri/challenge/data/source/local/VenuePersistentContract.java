@@ -8,7 +8,7 @@ import android.provider.BaseColumns;
 
 public final class VenuePersistentContract {
 
-    public static final int DATABASE_VERSION = 3;
+    public static final int DATABASE_VERSION = 4;
 
     public static final String DATABASE_NAME = "Venues.db";
 
@@ -44,7 +44,7 @@ public final class VenuePersistentContract {
                 "CREATE TABLE IF NOT EXISTS " +
                         TABLE_NAME + " (" +
                         _ID + INTEGER_TYPE + " PRIMARY KEY AUTOINCREMENT," +
-                        VENUE_ID + TEXT_TYPE + COMMA_SEP +
+                        VENUE_ID + TEXT_TYPE + " UNIQUE" + COMMA_SEP +
                         NAME + TEXT_TYPE + COMMA_SEP +
                         CHECK_IN_COUNT + INTEGER_TYPE + COMMA_SEP +
                         USER_COUNT + INTEGER_TYPE + COMMA_SEP +
@@ -75,14 +75,14 @@ public final class VenuePersistentContract {
                 "CREATE TABLE IF NOT EXISTS " +
                         TABLE_NAME + " (" +
                         _ID + INTEGER_TYPE + " PRIMARY KEY AUTOINCREMENT," +
-                        VENUE_ID + INTEGER_TYPE + COMMA_SEP +
+                        VENUE_ID + TEXT_TYPE + COMMA_SEP +
                         ADDRESS + TEXT_TYPE + COMMA_SEP +
                         CROSS_STREET + TEXT_TYPE + COMMA_SEP +
                         LATITUDE + DOUBLE_TYPE + COMMA_SEP +
                         LONGITUDE + DOUBLE_TYPE + COMMA_SEP +
                         COUNTRY + TEXT_TYPE + COMMA_SEP +
                         FORMATTED_ADDRESS + TEXT_TYPE + COMMA_SEP +
-                        "FOREIGN KEY (" + VENUE_ID + ") REFERENCES " + VenueEntry.TABLE_NAME + "(" + VenueEntry._ID + ") ON DELETE CASCADE);";
+                        "FOREIGN KEY (" + VENUE_ID + ") REFERENCES " + VenueEntry.TABLE_NAME + "(" + VenueEntry.VENUE_ID + ") ON DELETE CASCADE);";
 
         public static final String DROP_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
     }
@@ -105,12 +105,12 @@ public final class VenuePersistentContract {
                 "CREATE TABLE IF NOT EXISTS " +
                         TABLE_NAME + " (" +
                         _ID + INTEGER_TYPE + " PRIMARY KEY AUTOINCREMENT," +
-                        VENUE_ID + INTEGER_TYPE + COMMA_SEP +
+                        VENUE_ID + TEXT_TYPE + COMMA_SEP +
                         CATEGORY_ID + TEXT_TYPE + COMMA_SEP +
                         NAME + TEXT_TYPE + COMMA_SEP +
                         ICON_PREFIX + TEXT_TYPE + COMMA_SEP +
                         ICON_SUFFIX + TEXT_TYPE + COMMA_SEP +
-                        "FOREIGN KEY (" + VENUE_ID + ") REFERENCES " + VenueEntry.TABLE_NAME + "(" + VenueEntry._ID + ") ON DELETE CASCADE);";
+                        "FOREIGN KEY (" + VENUE_ID + ") REFERENCES " + VenueEntry.TABLE_NAME + "(" + VenueEntry.VENUE_ID + ") ON DELETE CASCADE);";
 
         public static final String DROP_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
     }
@@ -137,7 +137,7 @@ public final class VenuePersistentContract {
 
         public static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " (" +
                 _ID + INTEGER_TYPE + " PRIMARY KEY AUTOINCREMENT" + COMMA_SEP +
-                PHOTO_ID + TEXT_TYPE + COMMA_SEP +
+                PHOTO_ID + TEXT_TYPE + " UNIQUE" + COMMA_SEP +
                 CREATED_AT + LONG_TYPE + COMMA_SEP +
                 PREFIX + TEXT_TYPE + COMMA_SEP +
                 SUFFIX + TEXT_TYPE + COMMA_SEP +
@@ -145,7 +145,7 @@ public final class VenuePersistentContract {
                 HEIGHT + INTEGER_TYPE + COMMA_SEP +
                 VISIBILITY + TEXT_TYPE + COMMA_SEP +
                 VENUE_ID + INTEGER_TYPE + COMMA_SEP +
-                "FOREIGN KEY (" + VENUE_ID + ") REFERENCES " + VenueEntry.TABLE_NAME + "(" + VenueEntry._ID + ") ON DELETE CASCADE);";
+                "FOREIGN KEY (" + VENUE_ID + ") REFERENCES " + VenueEntry.TABLE_NAME + "(" + VenueEntry.VENUE_ID + ") ON DELETE CASCADE);";
 
         public static final String DROP_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
     }

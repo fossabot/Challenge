@@ -30,7 +30,7 @@ public class Venue {
     public Venue(String id, String name, VenueLocation location, VenueStat stat, VenueCategory[] categories) {
         mId = id;
         mName = name;
-        mLocation = checkNotNull(location);
+        mLocation = location;
         mVenueStat = checkNotNull(stat);
         mCategories = checkNotNull(categories);
     }

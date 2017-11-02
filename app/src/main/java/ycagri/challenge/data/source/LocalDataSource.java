@@ -4,6 +4,7 @@ import java.util.List;
 
 import io.reactivex.Observable;
 import ycagri.challenge.data.Venue;
+import ycagri.challenge.data.VenuePhoto;
 
 /**
  * Created by vayen01 on 24/10/2017.
@@ -17,7 +18,11 @@ public interface LocalDataSource {
 
     Observable<Venue> getVenueById(String id);
 
-    Observable<Integer> getCount();
+    Observable<List<VenuePhoto>> getVenuePhotos(String venueId);
+
+    Observable<List<VenuePhoto>> insertVenuePhotos(List<VenuePhoto> venuePhotos, String venueId);
+
+    Observable<Integer> getPhotoCount(String venueId);
 
     void clearDatabase();
 }

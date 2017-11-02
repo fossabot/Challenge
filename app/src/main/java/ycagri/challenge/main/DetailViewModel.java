@@ -4,7 +4,6 @@ import android.databinding.BaseObservable;
 import android.databinding.ObservableArrayList;
 import android.databinding.ObservableList;
 
-import java.util.Calendar;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -42,13 +41,7 @@ public class DetailViewModel extends BaseObservable {
     }
 
     private void getVenuePhotos() {
-        Calendar cal = Calendar.getInstance();
-        int year = cal.get(Calendar.YEAR);
-        int month = cal.get(Calendar.MONTH) + 1;
-        int day = cal.get(Calendar.DAY_OF_MONTH);
-        String date = year + (month < 10 ? "0" + month : "" + month) + (day < 10 ? "0" + day : "" + day);
-
-        mVenueRepository.getVenuePhotos(mVenueId, date)
+        mVenueRepository.getVenuePhotos(mVenueId)
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Observer<List<VenuePhoto>>() {
                     @Override

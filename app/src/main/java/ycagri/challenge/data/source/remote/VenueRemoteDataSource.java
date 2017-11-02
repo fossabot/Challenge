@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
+import java.util.Calendar;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -50,12 +51,20 @@ public class VenueRemoteDataSource implements VenueDataSource {
 
     @NonNull
     @Override
-    public Observable<List<Venue>> getVenues(double latitude, double longitude, String date) {
-        return mRetrofit.getVenues(latitude + "," + longitude, CLIENT_ID, CLIENT_SECRET, date);
+    public Observable<List<Venue>> getVenues(double latitude, double longitude) {
+        return mRetrofit.getVenues(latitude + "," + longitude, CLIENT_ID, CLIENT_SECRET, getDate());
     }
 
     @Override
-    public Observable<List<VenuePhoto>> getVenuePhotos(String venueId, String date) {
-        return mRetrofit.getVenuePhotos(venueId, CLIENT_ID, CLIENT_SECRET, date);
+    public Observable<List<VenuePhoto>> getVenuePhotos(String venueId) {
+        return mRetrofit.getVenuePhotos(venueId, CLIENT_ID, CLIENT_SECRET, getDate());
+    }
+
+    private String getDate() {
+        Calendar cal = Calendar.getInstance();
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH) + 1;
+        int day = cal.get(Calendar.DAY_OF_MONTH);
+        return year + (month < 10 ? "0" + month : "" + month) + (day < 10 ? "0" + day : "" + day);
     }
 }

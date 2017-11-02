@@ -16,7 +16,6 @@ import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.tasks.Task;
 
-import java.util.Calendar;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -92,13 +91,7 @@ public class MasterViewModel extends BaseObservable {
         LocationServices.getFusedLocationProviderClient(context).getLastLocation()
                 .addOnCompleteListener(task1 -> {
                     if (task1.isSuccessful()) {
-                        Calendar cal = Calendar.getInstance();
-                        int year = cal.get(Calendar.YEAR);
-                        int month = cal.get(Calendar.MONTH) + 1;
-                        int day = cal.get(Calendar.DAY_OF_MONTH);
-                        String date = year + (month < 10 ? "0" + month : "" + month) + (day < 10 ? "0" + day : "" + day);
-
-                        mVenueRepository.getVenues(task1.getResult().getLatitude(), task1.getResult().getLongitude(), date)
+                        mVenueRepository.getVenues(task1.getResult().getLatitude(), task1.getResult().getLongitude())
                                 .subscribeOn(Schedulers.io())
                                 .subscribe(new Observer<List<Venue>>() {
                                     @Override

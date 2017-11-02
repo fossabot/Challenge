@@ -51,14 +51,15 @@ public class VenueRepository implements VenueDataSource {
      * Gets venues from  local data source (SQLite).
      */
     @Override
-    public Observable<List<Venue>> getVenues(double latitude, double longitude, String date) {
+    public Observable<List<Venue>> getVenues(double latitude, double longitude) {
         if (forceRefresh(latitude, longitude)) {
             Log.d(TAG, "Retrieving from remote...");
             mSharedPreferencesManager.putLatestLatitude(latitude);
             mSharedPreferencesManager.putLatestLongitude(longitude);
             mSharedPreferencesManager.putLatestUpdateTime(System.currentTimeMillis());
-            Observable<List<Venue>> o = mVenueRemoteDataSource.getVenues(latitude, longitude, date);
-            return mVenueLocalDataSource.insertVenues(o.subscribeOn(Schedulers.computation()).blockingFirst());
+            return mVenueRemoteDataSource.getVenues(latitude, longitude)
+                    .subscribeOn(Schedulers.computation())
+                    .flatMap(mVenueLocalDataSource::insertVenues);
         } else {
             Log.d(TAG, "Retrieving from local...");
             return mVenueLocalDataSource.getVenues();
@@ -66,8 +67,18 @@ public class VenueRepository implements VenueDataSource {
     }
 
     @Override
-    public Observable<List<VenuePhoto>> getVenuePhotos(String venueId, String date) {
-        return mVenueRemoteDataSource.getVenuePhotos(venueId, date);
+    public Observable<List<VenuePhoto>> getVenuePhotos(String venueId) {
+        return mVenueLocalDataSource.getPhotoCount(venueId)
+                .subscribeOn(Schedulers.computation())
+                .flatMap(count -> {
+                    if (count == 0) {
+                        Log.d(TAG, "Retrieving photos from remote...");
+                        return mVenueLocalDataSource.insertVenuePhotos(mVenueRemoteDataSource.getVenuePhotos(venueId).subscribeOn(Schedulers.computation()).blockingFirst(), venueId);
+                    } else {
+                        Log.d(TAG, "Retrieving photos from local...");
+                        return mVenueLocalDataSource.getVenuePhotos(venueId);
+                    }
+                });
     }
 
     private boolean forceRefresh(double latitude, double longitude) {

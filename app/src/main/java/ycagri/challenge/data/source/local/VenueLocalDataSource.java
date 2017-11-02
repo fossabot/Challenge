@@ -22,6 +22,7 @@ import ycagri.challenge.data.CategoryIcon;
 import ycagri.challenge.data.Venue;
 import ycagri.challenge.data.VenueCategory;
 import ycagri.challenge.data.VenueLocation;
+import ycagri.challenge.data.VenuePhoto;
 import ycagri.challenge.data.VenueStat;
 import ycagri.challenge.data.source.LocalDataSource;
 
@@ -40,6 +41,9 @@ public class VenueLocalDataSource implements LocalDataSource {
     private Function<Cursor, Venue> mVenueMapperFunction;
 
     @NonNull
+    private Function<Cursor, VenuePhoto> mPhotoMapperFunction;
+
+    @NonNull
     private Function<Cursor, Integer> mCountMapperFunction;
 
     @Inject
@@ -51,19 +55,12 @@ public class VenueLocalDataSource implements LocalDataSource {
         SqlBrite sqlBrite = new SqlBrite.Builder().build();
         mDatabaseHelper = sqlBrite.wrapDatabaseHelper(dbHelper, scheduler);
         mVenueMapperFunction = this::getVenue;
+        mPhotoMapperFunction = this::getPhoto;
         mCountMapperFunction = this::getCount;
     }
 
     @NonNull
     private Venue getVenue(@NonNull Cursor c) {
-        VenueLocation location = new VenueLocation(
-                c.getString(c.getColumnIndexOrThrow(VenuePersistentContract.LocationEntry.ADDRESS)),
-                c.getString(c.getColumnIndexOrThrow(VenuePersistentContract.LocationEntry.CROSS_STREET)),
-                c.getDouble(c.getColumnIndexOrThrow(VenuePersistentContract.LocationEntry.LATITUDE)),
-                c.getDouble(c.getColumnIndexOrThrow(VenuePersistentContract.LocationEntry.LONGITUDE)),
-                c.getString(c.getColumnIndexOrThrow(VenuePersistentContract.LocationEntry.COUNTRY)),
-                c.getString(c.getColumnIndexOrThrow(VenuePersistentContract.LocationEntry.FORMATTED_ADDRESS)).split("\\|"));
-
         VenueStat stat = new VenueStat(
                 c.getInt(c.getColumnIndexOrThrow(VenuePersistentContract.VenueEntry.CHECK_IN_COUNT)),
                 c.getInt(c.getColumnIndexOrThrow(VenuePersistentContract.VenueEntry.USER_COUNT)),
@@ -82,29 +79,41 @@ public class VenueLocalDataSource implements LocalDataSource {
         return new Venue(
                 c.getString(c.getColumnIndexOrThrow(VenuePersistentContract.VenueEntry.VENUE_ID)),
                 c.getString(c.getColumnIndexOrThrow(VenuePersistentContract.VenueEntry.NAME)),
-                location, stat, new VenueCategory[]{category});
+                null, stat, new VenueCategory[]{category});
     }
 
     @NonNull
-    private Integer getCount(@NonNull Cursor c) {
-        return c.getCount();
+    private VenuePhoto getPhoto(@NonNull Cursor c) {
+        return new VenuePhoto(
+                c.getString(c.getColumnIndexOrThrow(VenuePersistentContract.VenuePhotoEntry.PHOTO_ID)),
+                c.getLong(c.getColumnIndexOrThrow(VenuePersistentContract.VenuePhotoEntry.CREATED_AT)),
+                c.getString(c.getColumnIndexOrThrow(VenuePersistentContract.VenuePhotoEntry.PREFIX)),
+                c.getString(c.getColumnIndexOrThrow(VenuePersistentContract.VenuePhotoEntry.SUFFIX)),
+                c.getInt(c.getColumnIndexOrThrow(VenuePersistentContract.VenuePhotoEntry.WIDTH)),
+                c.getInt(c.getColumnIndexOrThrow(VenuePersistentContract.VenuePhotoEntry.HEIGHT)),
+                c.getString(c.getColumnIndexOrThrow(VenuePersistentContract.VenuePhotoEntry.VISIBILITY)));
+    }
+
+    @NonNull
+    private Integer getCount(Cursor c) {
+        return c.getInt(0);
     }
 
     @Override
     public Observable<List<Venue>> getVenues() {
-        String tableName = VenuePersistentContract.VenueEntry.TABLE_NAME + "," +
-                VenuePersistentContract.CategoryEntry.TABLE_NAME + "," +
-                VenuePersistentContract.LocationEntry.TABLE_NAME;
-        String sql = String.format("SELECT * FROM %s WHERE %s", tableName,
-                VenuePersistentContract.VenueEntry.TABLE_NAME + "." + VenuePersistentContract.VenueEntry._ID + "=" + VenuePersistentContract.LocationEntry.VENUE_ID + " AND " +
-                        VenuePersistentContract.VenueEntry.TABLE_NAME + "." + VenuePersistentContract.VenueEntry._ID + "=" + VenuePersistentContract.CategoryEntry.VENUE_ID);
+        String tableName = VenuePersistentContract.VenueEntry.TABLE_NAME + " INNER JOIN " +
+                VenuePersistentContract.CategoryEntry.TABLE_NAME + " ON " +
+                VenuePersistentContract.VenueEntry.TABLE_NAME + "." + VenuePersistentContract.VenueEntry.VENUE_ID
+                + "=" + VenuePersistentContract.CategoryEntry.TABLE_NAME + "." + VenuePersistentContract.CategoryEntry.VENUE_ID;
+
+        String sql = String.format("SELECT * FROM %s", tableName);
         return mDatabaseHelper.createQuery(tableName, sql).mapToList(mVenueMapperFunction);
     }
 
     @Override
     public Observable<List<Venue>> insertVenues(List<Venue> venues) {
         return Observable.using(mDatabaseHelper::newTransaction,
-                transaction -> inTransactionInsert(venues, transaction),
+                transaction -> inTransactionVenueInsert(venues, transaction),
                 BriteDatabase.Transaction::end);
     }
 
@@ -121,10 +130,30 @@ public class VenueLocalDataSource implements LocalDataSource {
     }
 
     @Override
-    public Observable<Integer> getCount() {
-        return mDatabaseHelper.createQuery(VenuePersistentContract.VenueEntry.TABLE_NAME,
-                String.format("SELECT COUNT(*) FROM %s", VenuePersistentContract.VenueEntry.TABLE_NAME))
-                .mapToOne(mCountMapperFunction);
+    public Observable<List<VenuePhoto>> getVenuePhotos(String venueId) {
+        String sql = String.format("SELECT * FROM %s WHERE %s",
+                VenuePersistentContract.VenuePhotoEntry.TABLE_NAME,
+                VenuePersistentContract.VenuePhotoEntry.VENUE_ID + "=?");
+
+        return mDatabaseHelper.createQuery(VenuePersistentContract.VenuePhotoEntry.TABLE_NAME,
+                sql, new String[]{venueId}).mapToList(mPhotoMapperFunction);
+    }
+
+    @Override
+    public Observable<List<VenuePhoto>> insertVenuePhotos(List<VenuePhoto> venuePhotos, String venueId) {
+        return Observable.using(mDatabaseHelper::newTransaction,
+                transaction -> inTransactionPhotoInsert(venuePhotos, venueId, transaction),
+                BriteDatabase.Transaction::end);
+    }
+
+    @Override
+    public Observable<Integer> getPhotoCount(String venueId) {
+        String sql = String.format("SELECT COUNT(*) FROM %s WHERE %s",
+                VenuePersistentContract.VenuePhotoEntry.TABLE_NAME,
+                VenuePersistentContract.VenuePhotoEntry.VENUE_ID + "=?");
+
+        return mDatabaseHelper.createQuery(VenuePersistentContract.VenuePhotoEntry.TABLE_NAME,
+                sql, new String[]{venueId}).mapToOne(mCountMapperFunction);
     }
 
     @Override
@@ -133,19 +162,35 @@ public class VenueLocalDataSource implements LocalDataSource {
     }
 
     @NonNull
-    private Observable<List<Venue>> inTransactionInsert(@NonNull List<Venue> venues,
-                                                        @NonNull BriteDatabase.Transaction transaction) {
+    private Observable<List<Venue>> inTransactionVenueInsert(@NonNull List<Venue> venues,
+                                                             @NonNull BriteDatabase.Transaction transaction) {
         checkNotNull(venues);
         checkNotNull(transaction);
 
         return Observable.fromArray(venues.toArray(new Venue[venues.size()]))
                 .doOnNext(v -> {
                     ContentValues values = toContentValues(v);
-                    long id = mDatabaseHelper.insert(VenuePersistentContract.VenueEntry.TABLE_NAME, values);
-                    mDatabaseHelper.insert(VenuePersistentContract.LocationEntry.TABLE_NAME, toContentValues(v.getLocation(), id));
+                    mDatabaseHelper.insert(VenuePersistentContract.VenueEntry.TABLE_NAME, values);
+                    mDatabaseHelper.insert(VenuePersistentContract.LocationEntry.TABLE_NAME, toContentValues(v.getLocation(), v.getId()));
                     for (VenueCategory c : v.getCategories())
                         if (c.isPrimary())
-                            mDatabaseHelper.insert(VenuePersistentContract.CategoryEntry.TABLE_NAME, toContentValues(c, id));
+                            mDatabaseHelper.insert(VenuePersistentContract.CategoryEntry.TABLE_NAME, toContentValues(c, v.getId()));
+                })
+                .doOnComplete(transaction::markSuccessful)
+                .toList().toObservable();
+    }
+
+    @NonNull
+    private Observable<List<VenuePhoto>> inTransactionPhotoInsert(@NonNull List<VenuePhoto> photos,
+                                                                  @NonNull String venueId,
+                                                                  @NonNull BriteDatabase.Transaction transaction) {
+        checkNotNull(photos);
+        checkNotNull(transaction);
+
+        return Observable.fromArray(photos.toArray(new VenuePhoto[photos.size()]))
+                .doOnNext(v -> {
+                    ContentValues values = toContentValues(v, venueId);
+                    mDatabaseHelper.insert(VenuePersistentContract.VenuePhotoEntry.TABLE_NAME, values);
                 })
                 .doOnComplete(transaction::markSuccessful)
                 .toList().toObservable();
@@ -161,7 +206,7 @@ public class VenueLocalDataSource implements LocalDataSource {
         return values;
     }
 
-    private ContentValues toContentValues(VenueLocation location, long venueId) {
+    private ContentValues toContentValues(VenueLocation location, String venueId) {
         ContentValues values = new ContentValues();
         values.put(VenuePersistentContract.LocationEntry.VENUE_ID, venueId);
         values.put(VenuePersistentContract.LocationEntry.ADDRESS, location.getAddress());
@@ -173,13 +218,27 @@ public class VenueLocalDataSource implements LocalDataSource {
         return values;
     }
 
-    private ContentValues toContentValues(VenueCategory category, long venueId) {
+    private ContentValues toContentValues(VenueCategory category, String venueId) {
         ContentValues values = new ContentValues();
         values.put(VenuePersistentContract.CategoryEntry.VENUE_ID, venueId);
         values.put(VenuePersistentContract.CategoryEntry.CATEGORY_ID, category.getId());
         values.put(VenuePersistentContract.CategoryEntry.NAME, category.getName());
         values.put(VenuePersistentContract.CategoryEntry.ICON_PREFIX, category.getIcon().getPrefix());
         values.put(VenuePersistentContract.CategoryEntry.ICON_SUFFIX, category.getIcon().getSuffix());
+        return values;
+    }
+
+    private ContentValues toContentValues(VenuePhoto photo, String mVenueId) {
+        ContentValues values = new ContentValues();
+        values.put(VenuePersistentContract.VenuePhotoEntry.PHOTO_ID, photo.getPhotoId());
+        values.put(VenuePersistentContract.VenuePhotoEntry.CREATED_AT, photo.getCreatedAt());
+        values.put(VenuePersistentContract.VenuePhotoEntry.PREFIX, photo.getPrefix());
+        values.put(VenuePersistentContract.VenuePhotoEntry.SUFFIX, photo.getSuffix());
+        values.put(VenuePersistentContract.VenuePhotoEntry.WIDTH, photo.getWidth());
+        values.put(VenuePersistentContract.VenuePhotoEntry.HEIGHT, photo.getHeight());
+        values.put(VenuePersistentContract.VenuePhotoEntry.VISIBILITY, photo.getVisibility());
+        values.put(VenuePersistentContract.VenuePhotoEntry.VENUE_ID, mVenueId);
+
         return values;
     }
 }
