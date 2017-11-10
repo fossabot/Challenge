@@ -44,6 +44,9 @@ public class VenueLocalDataSource implements LocalDataSource {
     private Function<Cursor, VenuePhoto> mPhotoMapperFunction;
 
     @NonNull
+    private Function<Cursor, VenueLocation> mLocationMapperFunction;
+
+    @NonNull
     private Function<Cursor, Integer> mCountMapperFunction;
 
     @Inject
@@ -56,6 +59,7 @@ public class VenueLocalDataSource implements LocalDataSource {
         mDatabaseHelper = sqlBrite.wrapDatabaseHelper(dbHelper, scheduler);
         mVenueMapperFunction = this::getVenue;
         mPhotoMapperFunction = this::getPhoto;
+        mLocationMapperFunction = this::getLocation;
         mCountMapperFunction = this::getCount;
     }
 
@@ -95,6 +99,17 @@ public class VenueLocalDataSource implements LocalDataSource {
     }
 
     @NonNull
+    private VenueLocation getLocation(@NonNull Cursor c) {
+        return new VenueLocation(
+                c.getString(c.getColumnIndexOrThrow(VenuePersistentContract.LocationEntry.ADDRESS)),
+                c.getString(c.getColumnIndexOrThrow(VenuePersistentContract.LocationEntry.CROSS_STREET)),
+                c.getDouble(c.getColumnIndexOrThrow(VenuePersistentContract.LocationEntry.LATITUDE)),
+                c.getDouble(c.getColumnIndexOrThrow(VenuePersistentContract.LocationEntry.LONGITUDE)),
+                c.getString(c.getColumnIndexOrThrow(VenuePersistentContract.LocationEntry.COUNTRY)),
+                c.getString(c.getColumnIndexOrThrow(VenuePersistentContract.LocationEntry.FORMATTED_ADDRESS)).split("\\|"));
+    }
+
+    @NonNull
     private Integer getCount(Cursor c) {
         return c.getInt(0);
     }
@@ -118,15 +133,11 @@ public class VenueLocalDataSource implements LocalDataSource {
     }
 
     @Override
-    public Observable<Venue> getVenueById(String id) {
-        String tableName = VenuePersistentContract.VenueEntry.TABLE_NAME + "," +
-                VenuePersistentContract.CategoryEntry.TABLE_NAME + "," +
-                VenuePersistentContract.LocationEntry.TABLE_NAME;
-        String sql = String.format("SELECT * FROM %s WHERE %s", tableName,
-                VenuePersistentContract.VenueEntry.TABLE_NAME + "." + VenuePersistentContract.VenueEntry._ID + "=" + VenuePersistentContract.LocationEntry.VENUE_ID + " AND " +
-                        VenuePersistentContract.VenueEntry.TABLE_NAME + "." + VenuePersistentContract.VenueEntry._ID + "=" + VenuePersistentContract.CategoryEntry.VENUE_ID + " AND " +
-                        VenuePersistentContract.VenueEntry.VENUE_ID + "=?");
-        return mDatabaseHelper.createQuery(tableName, sql, new String[]{id}).mapToOne(mVenueMapperFunction);
+    public Observable<VenueLocation> getVenueLocation(String id) {
+        String sql = String.format("SELECT * FROM %s WHERE %s", VenuePersistentContract.LocationEntry.TABLE_NAME,
+                VenuePersistentContract.LocationEntry.VENUE_ID + "=?");
+        return mDatabaseHelper.createQuery(VenuePersistentContract.LocationEntry.TABLE_NAME, sql, new String[]{id})
+                .mapToOne(mLocationMapperFunction);
     }
 
     @Override

@@ -58,4 +58,10 @@ public class VenueLocation {
     public String[] getFormattedAddress() {
         return mFormattedAddress;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof VenueLocation && ((VenueLocation) obj).getLatitude() == mLatitude &&
+                ((VenueLocation) obj).getLongitude() == mLongitude;
+    }
 }

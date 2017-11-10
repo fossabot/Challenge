@@ -7,7 +7,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.Calendar;
 import java.util.List;
 
 import io.reactivex.observers.TestObserver;
@@ -19,7 +18,10 @@ import ycagri.challenge.data.Venue;
 import ycagri.challenge.data.VenuePhoto;
 
 /**
- * Created by vayen01 on 13/10/2017.
+ * Unit tests are implemented for {@link VenueRemoteDataSource}.
+ *
+ * @author ycagri
+ * @since 13/10/2017
  */
 @RunWith(AndroidJUnit4.class)
 @LargeTest
@@ -46,14 +48,8 @@ public class VenueRemoteDataSourceTest {
 
     @Test
     public void getVenues() {
-        Calendar cal = Calendar.getInstance();
-        int year = cal.get(Calendar.YEAR);
-        int month = cal.get(Calendar.MONTH) + 1;
-        int day = cal.get(Calendar.DAY_OF_MONTH);
-        String date = year + (month < 10 ? "0" + month : "" + month) + (day < 10 ? "0" + day : "" + day);
-
         TestObserver<List<Venue>> o = new TestObserver<>();
-        mRemoteDataSource.getVenues(31d, 29d, date)
+        mRemoteDataSource.getVenues(31d, 29d)
                 .subscribe(o);
 
         o.assertValue(venues12 -> venues12.size() == 3);
@@ -62,14 +58,8 @@ public class VenueRemoteDataSourceTest {
 
     @Test
     public void getPhotos() {
-        Calendar cal = Calendar.getInstance();
-        int year = cal.get(Calendar.YEAR);
-        int month = cal.get(Calendar.MONTH) + 1;
-        int day = cal.get(Calendar.DAY_OF_MONTH);
-        String date = year + (month < 10 ? "0" + month : "" + month) + (day < 10 ? "0" + day : "" + day);
-
         TestObserver<List<VenuePhoto>> o = new TestObserver<>();
-        mRemoteDataSource.getVenuePhotos(PHOTO_ID, date)
+        mRemoteDataSource.getVenuePhotos(PHOTO_ID)
                 .subscribe(o);
 
         o.assertValue(venuePhotos -> venuePhotos.size() == 1);
