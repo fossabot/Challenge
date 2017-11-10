@@ -24,7 +24,6 @@ import ycagri.challenge.data.VenueCategory;
 import ycagri.challenge.data.VenueLocation;
 import ycagri.challenge.data.VenuePhoto;
 import ycagri.challenge.data.VenueStat;
-import ycagri.challenge.data.source.LocalDataSource;
 
 import static dagger.internal.Preconditions.checkNotNull;
 

@@ -1,10 +1,8 @@
 package ycagri.challenge.main;
 
-import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,10 +18,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import dagger.Subcomponent;
-import dagger.android.AndroidInjection;
-import dagger.android.AndroidInjector;
-import dagger.android.support.AndroidSupportInjection;
 import dagger.android.support.DaggerFragment;
 import ycagri.challenge.R;
 import ycagri.challenge.data.VenuePhoto;
@@ -95,11 +89,7 @@ public class DetailFragment extends DaggerFragment implements OnMapReadyCallback
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        //LatLng latLng = new LatLng(mVenue.getLatitude(), mVenue.getLongitude());
-        //googleMap.addMarker(new MarkerOptions()
-        //        .position(latLng)
-        //        .title(mVenue.getName()));
-        //googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14));
+        mViewModel.setMap(googleMap);
     }
 
     private class VenuePhotosPagerAdapter extends BindingPagerAdapter<VenuePhoto> {
@@ -119,6 +109,10 @@ public class DetailFragment extends DaggerFragment implements OnMapReadyCallback
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
             container.removeView((FrameLayout) object);
+        }
+
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
         }
     }
 }

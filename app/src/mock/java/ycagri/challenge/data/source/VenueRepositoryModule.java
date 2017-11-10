@@ -4,7 +4,9 @@ import javax.inject.Singleton;
 
 import dagger.Binds;
 import dagger.Module;
+import ycagri.challenge.data.source.local.LocalDataSource;
 import ycagri.challenge.data.source.local.VenueLocalDataSource;
+import ycagri.challenge.data.source.remote.RemoteDataSource;
 import ycagri.challenge.data.source.remote.VenueRemoteDataSource;
 
 /**
@@ -21,5 +23,5 @@ abstract public class VenueRepositoryModule {
     @Singleton
     @Binds
     @Remote
-    abstract VenueDataSource provideTasksRemoteDataSource(VenueRemoteDataSource dataSource);
+    abstract RemoteDataSource provideTasksRemoteDataSource(VenueRemoteDataSource dataSource);
 }

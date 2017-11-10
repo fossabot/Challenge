@@ -1,4 +1,4 @@
-package ycagri.challenge.data.source;
+package ycagri.challenge.data.source.local;
 
 import java.util.List;
 

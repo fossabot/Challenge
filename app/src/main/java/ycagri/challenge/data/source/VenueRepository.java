@@ -7,9 +7,13 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import ycagri.challenge.data.Venue;
+import ycagri.challenge.data.VenueLocation;
 import ycagri.challenge.data.VenuePhoto;
+import ycagri.challenge.data.source.local.LocalDataSource;
+import ycagri.challenge.data.source.remote.RemoteDataSource;
 import ycagri.challenge.util.SharedPreferenceManager;
 
 /**
@@ -20,7 +24,7 @@ public class VenueRepository implements VenueDataSource {
 
     private static final String TAG = "Repository";
 
-    private final VenueDataSource mVenueRemoteDataSource;
+    private final RemoteDataSource mVenueRemoteDataSource;
 
     private final LocalDataSource mVenueLocalDataSource;
 
@@ -39,7 +43,7 @@ public class VenueRepository implements VenueDataSource {
      * with {@code @Nullable} values.
      */
     @Inject
-    VenueRepository(@Remote VenueDataSource venueRemoteDataSource,
+    VenueRepository(@Remote RemoteDataSource venueRemoteDataSource,
                     @Local LocalDataSource venueLocalDataSource,
                     SharedPreferenceManager sharedPreferenceManager) {
         mVenueRemoteDataSource = venueRemoteDataSource;
@@ -73,12 +77,24 @@ public class VenueRepository implements VenueDataSource {
                 .flatMap(count -> {
                     if (count == 0) {
                         Log.d(TAG, "Retrieving photos from remote...");
-                        return mVenueLocalDataSource.insertVenuePhotos(mVenueRemoteDataSource.getVenuePhotos(venueId).subscribeOn(Schedulers.computation()).blockingFirst(), venueId);
+                        Observable<List<VenuePhoto>> photos = mVenueRemoteDataSource.getVenuePhotos(venueId);
+                        photos.subscribeOn(Schedulers.io()).subscribe(new Consumer<List<VenuePhoto>>() {
+                            @Override
+                            public void accept(List<VenuePhoto> venuePhotos) throws Exception {
+                                mVenueLocalDataSource.insertVenuePhotos(venuePhotos, venueId);
+                            }
+                        });
+                        return photos;
                     } else {
                         Log.d(TAG, "Retrieving photos from local...");
                         return mVenueLocalDataSource.getVenuePhotos(venueId);
                     }
                 });
+    }
+
+    @Override
+    public Observable<VenueLocation> getVenueLocation(String venueId) {
+        return mVenueLocalDataSource.getVenueLocation(venueId);
     }
 
     private boolean forceRefresh(double latitude, double longitude) {

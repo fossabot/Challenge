@@ -28,7 +28,7 @@ import static dagger.internal.Preconditions.checkNotNull;
  * Created by vayen01 on 10/10/2017.
  */
 @Singleton
-public class VenueRemoteDataSource implements VenueDataSource {
+public class VenueRemoteDataSource implements RemoteDataSource {
 
     private static final String CLIENT_ID = "PWRC42LMLFLMEIPL05NKAQP31TG3I4XDZGPTAYSYJSBGFIGI";
     private static final String CLIENT_SECRET = "FT2E3K22SAYMPRWY0QARIQ0OKKVFOGVLGR1ZFBFPZ2CPVTVH";
