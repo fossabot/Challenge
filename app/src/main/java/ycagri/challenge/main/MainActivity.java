@@ -1,6 +1,8 @@
 package ycagri.challenge.main;
 
 import android.os.Bundle;
+import android.support.annotation.VisibleForTesting;
+import android.support.test.espresso.IdlingResource;
 import android.support.v7.widget.Toolbar;
 
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -10,6 +12,7 @@ import javax.inject.Inject;
 import dagger.android.support.DaggerAppCompatActivity;
 import ycagri.challenge.R;
 import ycagri.challenge.util.ActivityUtils;
+import ycagri.challenge.util.EspressoIdlingResource;
 
 /**
  * This class is the only activity that holds fragments. It has different layout implementations
@@ -49,5 +52,10 @@ public class MainActivity extends DaggerAppCompatActivity implements VenueSelect
         } else {
             ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), DetailFragment.newInstance(venueId), R.id.fragment_container);
         }
+    }
+
+    @VisibleForTesting
+    public IdlingResource getCountingIdlingResource() {
+        return EspressoIdlingResource.getIdlingResource();
     }
 }
