@@ -7,7 +7,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import ycagri.challenge.data.Venue;
 import ycagri.challenge.data.VenueLocation;
@@ -61,35 +60,31 @@ public class VenueRepository implements VenueDataSource {
             mSharedPreferencesManager.putLatestLatitude(latitude);
             mSharedPreferencesManager.putLatestLongitude(longitude);
             mSharedPreferencesManager.putLatestUpdateTime(System.currentTimeMillis());
-            return mVenueRemoteDataSource.getVenues(latitude, longitude)
-                    .subscribeOn(Schedulers.computation())
-                    .flatMap(mVenueLocalDataSource::insertVenues);
-        } else {
-            Log.d(TAG, "Retrieving from local...");
-            return mVenueLocalDataSource.getVenues();
+            mVenueRemoteDataSource.getVenues(latitude, longitude)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(Schedulers.computation())
+                    .subscribe(mVenueLocalDataSource::insertVenues);
         }
+
+        return mVenueLocalDataSource.getVenues();
     }
 
     @Override
     public Observable<List<VenuePhoto>> getVenuePhotos(String venueId) {
-        return mVenueLocalDataSource.getPhotoCount(venueId)
+        mVenueLocalDataSource.getPhotoCount(venueId)
                 .subscribeOn(Schedulers.computation())
-                .flatMap(count -> {
+                .observeOn(Schedulers.computation())
+                .subscribe(count -> {
                     if (count == 0) {
                         Log.d(TAG, "Retrieving photos from remote...");
-                        Observable<List<VenuePhoto>> photos = mVenueRemoteDataSource.getVenuePhotos(venueId);
-                        photos.subscribeOn(Schedulers.io()).subscribe(new Consumer<List<VenuePhoto>>() {
-                            @Override
-                            public void accept(List<VenuePhoto> venuePhotos) throws Exception {
-                                mVenueLocalDataSource.insertVenuePhotos(venuePhotos, venueId);
-                            }
-                        });
-                        return photos;
-                    } else {
-                        Log.d(TAG, "Retrieving photos from local...");
-                        return mVenueLocalDataSource.getVenuePhotos(venueId);
+                        mVenueRemoteDataSource.getVenuePhotos(venueId)
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(Schedulers.computation())
+                                .subscribe(venuePhotos -> mVenueLocalDataSource.insertVenuePhotos(venuePhotos, venueId));
                     }
                 });
+
+        return mVenueLocalDataSource.getVenuePhotos(venueId);
     }
 
     @Override

@@ -18,6 +18,7 @@ import javax.inject.Singleton;
 import io.reactivex.Observable;
 import io.reactivex.Scheduler;
 import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 import ycagri.challenge.data.CategoryIcon;
 import ycagri.challenge.data.Venue;
 import ycagri.challenge.data.VenueCategory;
@@ -49,8 +50,8 @@ public class VenueLocalDataSource implements LocalDataSource {
     private Function<Cursor, Integer> mCountMapperFunction;
 
     @Inject
-    public VenueLocalDataSource(@NonNull Context context,
-                                @NonNull Scheduler scheduler) {
+    VenueLocalDataSource(@NonNull Context context,
+                         @NonNull Scheduler scheduler) {
         checkNotNull(context, "context cannot be null");
         checkNotNull(scheduler, "scheduleProvider cannot be null");
         VenueDBHelper dbHelper = new VenueDBHelper(context);
@@ -121,21 +122,23 @@ public class VenueLocalDataSource implements LocalDataSource {
                 + "=" + VenuePersistentContract.CategoryEntry.TABLE_NAME + "." + VenuePersistentContract.CategoryEntry.VENUE_ID;
 
         String sql = String.format("SELECT * FROM %s", tableName);
-        return mDatabaseHelper.createQuery(tableName, sql).mapToList(mVenueMapperFunction);
+        return mDatabaseHelper.createQuery(VenuePersistentContract.VenueEntry.TABLE_NAME, sql).mapToList(mVenueMapperFunction);
     }
 
     @Override
-    public Observable<List<Venue>> insertVenues(List<Venue> venues) {
-        return Observable.using(mDatabaseHelper::newTransaction,
+    public void insertVenues(List<Venue> venues) {
+        Observable.using(mDatabaseHelper::newTransaction,
                 transaction -> inTransactionVenueInsert(venues, transaction),
-                BriteDatabase.Transaction::end);
+                BriteDatabase.Transaction::end)
+                .subscribeOn(Schedulers.io())
+                .subscribe();
     }
 
     @Override
     public Observable<VenueLocation> getVenueLocation(String id) {
         String sql = String.format("SELECT * FROM %s WHERE %s", VenuePersistentContract.LocationEntry.TABLE_NAME,
                 VenuePersistentContract.LocationEntry.VENUE_ID + "=?");
-        return mDatabaseHelper.createQuery(VenuePersistentContract.LocationEntry.TABLE_NAME, sql, new String[]{id})
+        return mDatabaseHelper.createQuery(VenuePersistentContract.LocationEntry.TABLE_NAME, sql, id)
                 .mapToOne(mLocationMapperFunction);
     }
 
@@ -146,14 +149,16 @@ public class VenueLocalDataSource implements LocalDataSource {
                 VenuePersistentContract.VenuePhotoEntry.VENUE_ID + "=?");
 
         return mDatabaseHelper.createQuery(VenuePersistentContract.VenuePhotoEntry.TABLE_NAME,
-                sql, new String[]{venueId}).mapToList(mPhotoMapperFunction);
+                sql, venueId).mapToList(mPhotoMapperFunction);
     }
 
     @Override
-    public Observable<List<VenuePhoto>> insertVenuePhotos(List<VenuePhoto> venuePhotos, String venueId) {
-        return Observable.using(mDatabaseHelper::newTransaction,
+    public void insertVenuePhotos(List<VenuePhoto> venuePhotos, String venueId) {
+        Observable.using(mDatabaseHelper::newTransaction,
                 transaction -> inTransactionPhotoInsert(venuePhotos, venueId, transaction),
-                BriteDatabase.Transaction::end);
+                BriteDatabase.Transaction::end)
+                .subscribeOn(Schedulers.io())
+                .subscribe();
     }
 
     @Override
@@ -163,7 +168,7 @@ public class VenueLocalDataSource implements LocalDataSource {
                 VenuePersistentContract.VenuePhotoEntry.VENUE_ID + "=?");
 
         return mDatabaseHelper.createQuery(VenuePersistentContract.VenuePhotoEntry.TABLE_NAME,
-                sql, new String[]{venueId}).mapToOne(mCountMapperFunction);
+                sql, venueId).mapToOne(mCountMapperFunction);
     }
 
     @Override

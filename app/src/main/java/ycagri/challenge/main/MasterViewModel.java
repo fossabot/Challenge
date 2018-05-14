@@ -16,12 +16,9 @@ import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.tasks.Task;
 
-import java.util.List;
-
 import javax.inject.Inject;
 
-import io.reactivex.Observer;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import ycagri.challenge.data.Venue;
 import ycagri.challenge.data.source.VenueRepository;
@@ -93,27 +90,10 @@ public class MasterViewModel extends BaseObservable {
                     if (task1.isSuccessful()) {
                         mVenueRepository.getVenues(task1.getResult().getLatitude(), task1.getResult().getLongitude())
                                 .subscribeOn(Schedulers.io())
-                                .subscribe(new Observer<List<Venue>>() {
-                                    @Override
-                                    public void onSubscribe(Disposable d) {
-
-                                    }
-
-                                    @Override
-                                    public void onNext(List<Venue> v) {
-                                        venues.clear();
-                                        venues.addAll(v);
-                                    }
-
-                                    @Override
-                                    public void onError(Throwable e) {
-                                        e.printStackTrace();
-                                    }
-
-                                    @Override
-                                    public void onComplete() {
-
-                                    }
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(venues -> {
+                                    this.venues.clear();
+                                    this.venues.addAll(venues);
                                 });
                     }
                 });

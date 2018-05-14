@@ -11,16 +11,15 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import io.reactivex.Observable;
+import io.reactivex.Single;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
+import ycagri.challenge.data.Venue;
 import ycagri.challenge.data.VenuePhoto;
+import ycagri.challenge.interfaces.RetrofitApiInterface;
 import ycagri.challenge.util.PhotoDeserializer;
 import ycagri.challenge.util.VenueDeserializer;
-import ycagri.challenge.data.Venue;
-import ycagri.challenge.data.source.VenueDataSource;
-import ycagri.challenge.interfaces.RetrofitApiInterface;
 
 import static dagger.internal.Preconditions.checkNotNull;
 
@@ -37,7 +36,7 @@ public class VenueRemoteDataSource implements RemoteDataSource {
     private final RetrofitApiInterface mRetrofit;
 
     @Inject
-    public VenueRemoteDataSource(@NonNull Retrofit.Builder retrofitBuilder) {
+    VenueRemoteDataSource(@NonNull Retrofit.Builder retrofitBuilder) {
         this.mRetrofit = checkNotNull(retrofitBuilder)
                 .addConverterFactory(GsonConverterFactory.create(new GsonBuilder()
                         .registerTypeAdapter(new TypeToken<List<Venue>>() {
@@ -51,12 +50,12 @@ public class VenueRemoteDataSource implements RemoteDataSource {
 
     @NonNull
     @Override
-    public Observable<List<Venue>> getVenues(double latitude, double longitude) {
+    public Single<List<Venue>> getVenues(double latitude, double longitude) {
         return mRetrofit.getVenues(latitude + "," + longitude, CLIENT_ID, CLIENT_SECRET, getDate());
     }
 
     @Override
-    public Observable<List<VenuePhoto>> getVenuePhotos(String venueId) {
+    public Single<List<VenuePhoto>> getVenuePhotos(String venueId) {
         return mRetrofit.getVenuePhotos(venueId, CLIENT_ID, CLIENT_SECRET, getDate());
     }
 

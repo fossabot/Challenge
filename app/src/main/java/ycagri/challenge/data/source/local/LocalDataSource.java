@@ -15,13 +15,13 @@ public interface LocalDataSource {
 
     Observable<List<Venue>> getVenues();
 
-    Observable<List<Venue>> insertVenues(List<Venue> venue);
+    void insertVenues(List<Venue> venue);
 
     Observable<VenueLocation> getVenueLocation(String id);
 
     Observable<List<VenuePhoto>> getVenuePhotos(String venueId);
 
-    Observable<List<VenuePhoto>> insertVenuePhotos(List<VenuePhoto> venuePhotos, String venueId);
+    void insertVenuePhotos(List<VenuePhoto> venuePhotos, String venueId);
 
     Observable<Integer> getPhotoCount(String venueId);
 

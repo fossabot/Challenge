@@ -53,24 +53,27 @@ public class MasterFragment extends DaggerFragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return FragmentMasterBinding.inflate(inflater, container, false).getRoot();
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         FragmentMasterBinding binding = DataBindingUtil.getBinding(view);
 
-        binding.rvMasterList.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        binding.rvMasterList.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
-        binding.rvMasterList.setHasFixedSize(true);
-        binding.rvMasterList.setAdapter(new VenueAdapter(new ArrayList<>()));
+        if (binding != null) {
+            binding.rvMasterList.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+            binding.rvMasterList.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
+            binding.rvMasterList.setHasFixedSize(true);
+            binding.rvMasterList.setAdapter(new VenueAdapter(new ArrayList<>()));
 
-        binding.setViewModel(mViewModel);
+            binding.setViewModel(mViewModel);
+        }
+
         int rc = ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION);
         if (rc == PackageManager.PERMISSION_GRANTED)
             mViewModel.getUserLocation(getContext());
@@ -101,13 +104,14 @@ public class MasterFragment extends DaggerFragment {
             super(items);
         }
 
+        @NonNull
         @Override
-        public VenueViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public VenueViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             return new VenueViewHolder(ItemMasterListBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
         }
 
         @Override
-        public void onBindViewHolder(VenueViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull VenueViewHolder holder, int position) {
             ItemMasterListBinding binding = DataBindingUtil.getBinding(holder.itemView);
             binding.setViewModel(new VenueItemBinding(mItems.get(position), mNavigator));
         }

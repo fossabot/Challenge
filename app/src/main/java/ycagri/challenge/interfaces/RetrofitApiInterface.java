@@ -2,7 +2,7 @@ package ycagri.challenge.interfaces;
 
 import java.util.List;
 
-import io.reactivex.Observable;
+import io.reactivex.Single;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
@@ -16,15 +16,15 @@ import ycagri.challenge.data.VenuePhoto;
 public interface RetrofitApiInterface {
 
     @GET("venues/search")
-    Observable<List<Venue>> getVenues(@Query("ll") String location,
-                                      @Query("client_id") String clientId,
-                                      @Query("client_secret") String clientSecret,
-                                      @Query("v") String date);
+    Single<List<Venue>> getVenues(@Query("ll") String location,
+                                  @Query("client_id") String clientId,
+                                  @Query("client_secret") String clientSecret,
+                                  @Query("v") String date);
 
     @GET("venues/{id}/photos")
-    Observable<List<VenuePhoto>> getVenuePhotos(@Path("id") String venueId,
-                                                @Query("client_id") String clientId,
-                                                @Query("client_secret") String clientSecret,
-                                                @Query("v") String date);
+    Single<List<VenuePhoto>> getVenuePhotos(@Path("id") String venueId,
+                                            @Query("client_id") String clientId,
+                                            @Query("client_secret") String clientSecret,
+                                            @Query("v") String date);
 
 }

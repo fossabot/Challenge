@@ -11,15 +11,11 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.util.List;
-
 import javax.inject.Inject;
 
-import io.reactivex.Observer;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import ycagri.challenge.BR;
-import ycagri.challenge.data.VenueLocation;
 import ycagri.challenge.data.VenuePhoto;
 import ycagri.challenge.data.source.VenueRepository;
 import ycagri.challenge.di.ActivityScoped;
@@ -44,7 +40,7 @@ public class DetailViewModel extends BaseObservable {
     public ObservableList<VenuePhoto> photos = new ObservableArrayList<>();
 
     @Inject
-    public DetailViewModel(VenueRepository venueRepository) {
+    DetailViewModel(VenueRepository venueRepository) {
         this.mVenueRepository = checkNotNull(venueRepository);
     }
 
@@ -57,7 +53,7 @@ public class DetailViewModel extends BaseObservable {
 
     public void setMap(GoogleMap map) {
         mMap = map;
-        if(mLatestLatLng!=null){
+        if (mLatestLatLng != null) {
             updateMap();
         }
     }
@@ -70,60 +66,28 @@ public class DetailViewModel extends BaseObservable {
     private void getVenuePhotos() {
         mVenueRepository.getVenuePhotos(mVenueId)
                 .subscribeOn(Schedulers.io())
-                .subscribe(new Observer<List<VenuePhoto>>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onNext(List<VenuePhoto> venuePhotos) {
-                        photos.clear();
-                        photos.addAll(venuePhotos);
-                        notifyPropertyChanged(BR.noPhotoVisibility);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(venuePhotos -> {
+                    photos.clear();
+                    photos.addAll(venuePhotos);
+                    notifyPropertyChanged(BR.noPhotoVisibility);
                 });
     }
 
     private void getVenueLocation() {
-        mVenueRepository.getVenueLocation(mVenueId).subscribeOn(Schedulers.io())
-                .subscribe(new Observer<VenueLocation>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onNext(VenueLocation location) {
-                        if (mMap != null) {
-                            mLatestLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-                            updateMap();
-                        }
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-
+        mVenueRepository.getVenueLocation(mVenueId)
+                .take(1)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(venueLocation -> {
+                    if (mMap != null) {
+                        mLatestLatLng = new LatLng(venueLocation.getLatitude(), venueLocation.getLongitude());
+                        updateMap();
                     }
                 });
     }
 
-    private void updateMap(){
+    private void updateMap() {
         mMap.clear();
         mMap.addMarker(new MarkerOptions()
                 .position(mLatestLatLng));
