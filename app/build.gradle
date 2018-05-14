@@ -1,13 +1,25 @@
 apply plugin: 'com.android.application'
+buildscript {
+    ext.supportVersion = '27.1.1'
+    ext.buildToolVersion = '27.0.3'
+    ext.playServicesVersion = '15.0.1'
+    repositories {
+        maven { url 'https://maven.fabric.io/public' }
+    }
+
+    dependencies {
+        classpath 'io.fabric.tools:gradle:1.+'
+    }
+}
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion '26.0.2'
+    compileSdkVersion 27
+    buildToolsVersion "$buildToolVersion"
 
     defaultConfig {
         applicationId "ycagri.challenge"
         minSdkVersion 16
-        targetSdkVersion 25
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
 
@@ -43,7 +55,7 @@ android {
     android.variantFilter { variant ->
         if (variant.buildType.name == 'release'
                 && variant.getFlavors().get(0).name == 'mock') {
-            variant.setIgnore(true);
+            variant.setIgnore(true)
         }
     }
 
@@ -58,45 +70,45 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:26.1.0'
-    compile 'com.android.support:support-v4:26.1.0'
-    compile 'com.android.support:recyclerview-v7:26.1.0'
-    compile 'com.google.android.gms:play-services-maps:11.6.2'
-    compile 'com.google.android.gms:play-services-location:11.6.2'
+    api fileTree(include: ['*.jar'], dir: 'libs')
+    api "com.android.support:appcompat-v7:$supportVersion"
+    api "com.android.support:support-v4:$supportVersion"
+    api "com.android.support:recyclerview-v7:$supportVersion"
+    api "com.google.android.gms:play-services-maps:$playServicesVersion"
+    api "com.google.android.gms:play-services-location:$playServicesVersion"
 
-    compile 'com.squareup.picasso:picasso:2.5.2'
-    compile 'com.google.code.gson:gson:2.8.0'
-    compile 'io.reactivex:rxjava:1.2.3'
-    compile 'io.reactivex:rxandroid:1.2.1'
-    compile 'com.squareup.retrofit2:retrofit:2.3.0'
-    compile 'com.squareup.retrofit2:converter-gson:2.0.2'
-    compile 'com.squareup.retrofit2:adapter-rxjava2:2.2.0'
-    compile 'com.squareup.okhttp3:logging-interceptor:3.8.0'
-    compile 'com.squareup.sqlbrite2:sqlbrite:2.0.0'
+    api 'com.squareup.picasso:picasso:2.5.2'
+    api 'com.google.code.gson:gson:2.8.0'
+    api 'io.reactivex:rxjava:1.2.3'
+    api 'io.reactivex:rxandroid:1.2.1'
+    api 'com.squareup.retrofit2:retrofit:2.3.0'
+    api 'com.squareup.retrofit2:converter-gson:2.0.2'
+    api 'com.squareup.retrofit2:adapter-rxjava2:2.2.0'
+    api 'com.squareup.okhttp3:logging-interceptor:3.8.0'
+    api 'com.squareup.sqlbrite2:sqlbrite:2.0.0'
 
-    compile 'org.apache.commons:commons-lang3:3.6'
+    api 'org.apache.commons:commons-lang3:3.6'
 
     // Dagger dependencies
     annotationProcessor "com.google.dagger:dagger-compiler:2.11"
-    provided 'org.glassfish:javax.annotation:10.0-b28'
-    compile "com.google.dagger:dagger:2.11"
-    compile "com.google.dagger:dagger-android:2.11"
-    compile "com.google.dagger:dagger-android-support:2.11"
+    compileOnly 'org.glassfish:javax.annotation:10.0-b28'
+    api "com.google.dagger:dagger:2.11"
+    api "com.google.dagger:dagger-android:2.11"
+    api "com.google.dagger:dagger-android-support:2.11"
     annotationProcessor "com.google.dagger:dagger-android-processor:2.11"
 
-    testCompile "junit:junit:4.12"
-    testCompile "org.mockito:mockito-all:1.10.19"
-    testCompile "org.hamcrest:hamcrest-all:1.3"
+    testApi "junit:junit:4.12"
+    testApi "org.mockito:mockito-all:1.10.19"
+    testApi "org.hamcrest:hamcrest-all:1.3"
 
-    androidTestCompile "com.android.support.test.espresso:espresso-core:3.0.1"
-    androidTestCompile "com.android.support.test.espresso:espresso-contrib:3.0.1"
-    androidTestCompile "com.android.support.test.espresso:espresso-intents:3.0.1"
-    compile "com.android.support.test.espresso:espresso-idling-resource:3.0.1"
+    androidTestApi "com.android.support.test.espresso:espresso-core:3.0.2"
+    androidTestApi "com.android.support.test.espresso:espresso-contrib:3.0.2"
+    androidTestApi "com.android.support.test.espresso:espresso-intents:3.0.2"
+    api "com.android.support.test.espresso:espresso-idling-resource:3.0.2"
 
-    androidTestCompile 'com.android.support:support-annotations:26.1.0';
-    androidTestCompile 'com.android.support.test:runner:1.0.1'
-    androidTestCompile 'com.android.support.test:rules:1.0.1'
-    androidTestCompile 'org.mockito:mockito-core:1.10.19'
-    androidTestCompile 'junit:junit:4.12'
+    androidTestApi 'com.android.support:support-annotations:27.1.1'
+    androidTestApi 'com.android.support.test:runner:1.0.2'
+    androidTestApi 'com.android.support.test:rules:1.0.2'
+    androidTestApi 'org.mockito:mockito-core:1.10.19'
+    androidTestApi 'junit:junit:4.12'
 }
