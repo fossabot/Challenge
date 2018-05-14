@@ -23,6 +23,10 @@ public class VenueRepository implements VenueDataSource {
 
     private static final String TAG = "Repository";
 
+    private static final int REFRESH_TIME_DIFFERENCE = 60 * 60 * 1000;
+
+    private static final int REFRESH_DISTANCE_DIFFERENCE = 5;
+
     private final RemoteDataSource mVenueRemoteDataSource;
 
     private final LocalDataSource mVenueLocalDataSource;
@@ -99,7 +103,7 @@ public class VenueRepository implements VenueDataSource {
 
         double distance = getDistance(lastLatitude, lastLongitude, latitude, longitude);
 
-        return lastTime - System.currentTimeMillis() > 60 * 60 * 1000 || distance > 5;
+        return System.currentTimeMillis() - lastTime > REFRESH_TIME_DIFFERENCE || distance > REFRESH_DISTANCE_DIFFERENCE;
     }
 
     private double getDistance(double lat1, double lon1, double lat2, double lon2) {
