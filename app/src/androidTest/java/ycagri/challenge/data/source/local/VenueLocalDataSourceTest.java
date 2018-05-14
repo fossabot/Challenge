@@ -1,4 +1,4 @@
-package ycagri.challenge.data.source.remote;
+package ycagri.challenge.data.source.local;
 
 import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.LargeTest;
@@ -20,7 +20,6 @@ import ycagri.challenge.data.VenueCategory;
 import ycagri.challenge.data.VenueLocation;
 import ycagri.challenge.data.VenuePhoto;
 import ycagri.challenge.data.VenueStat;
-import ycagri.challenge.data.source.local.VenueLocalDataSource;
 
 /**
  * Unit tests are implemented for {@link VenueLocalDataSource}.
@@ -96,7 +95,7 @@ public class VenueLocalDataSourceTest {
         List<Venue> venueList = new ArrayList<>();
         venueList.add(mVenue);
 
-        mLocalDataSource.insertVenues(venueList).subscribe();
+        mLocalDataSource.insertVenues(venueList);
 
         TestObserver<List<Venue>> testObserver = new TestObserver<>();
         mLocalDataSource.getVenues().subscribe(testObserver);
@@ -109,7 +108,7 @@ public class VenueLocalDataSourceTest {
         List<Venue> venueList = new ArrayList<>();
         venueList.add(mVenue);
 
-        mLocalDataSource.insertVenues(venueList).subscribe();
+        mLocalDataSource.insertVenues(venueList);
 
         TestObserver<VenueLocation> testObserver = new TestObserver<>();
         mLocalDataSource.getVenueLocation(mVenue.getId()).subscribe(testObserver);
@@ -121,8 +120,8 @@ public class VenueLocalDataSourceTest {
         List<Venue> venueList = new ArrayList<>();
         venueList.add(mVenue);
 
-        mLocalDataSource.insertVenues(venueList).subscribe();
-        mLocalDataSource.insertVenuePhotos(mVenuePhotos, mVenue.getId()).subscribe();
+        mLocalDataSource.insertVenues(venueList);
+        mLocalDataSource.insertVenuePhotos(mVenuePhotos, mVenue.getId());
 
         TestObserver<List<VenuePhoto>> testObserver = new TestObserver<>();
         mLocalDataSource.getVenuePhotos(mVenue.getId()).subscribe(testObserver);
@@ -138,8 +137,8 @@ public class VenueLocalDataSourceTest {
         List<Venue> venueList = new ArrayList<>();
         venueList.add(mVenue);
 
-        mLocalDataSource.insertVenues(venueList).subscribe();
-        mLocalDataSource.insertVenuePhotos(mVenuePhotos, mVenue.getId()).subscribe();
+        mLocalDataSource.insertVenues(venueList);
+        mLocalDataSource.insertVenuePhotos(mVenuePhotos, mVenue.getId());
 
         countObserver = new TestObserver<>();
         mLocalDataSource.getPhotoCount(mVenue.getId()).subscribe(countObserver);

@@ -50,7 +50,7 @@ public class VenueLocalDataSource implements LocalDataSource {
     private Function<Cursor, Integer> mCountMapperFunction;
 
     @Inject
-    VenueLocalDataSource(@NonNull Context context,
+    public VenueLocalDataSource(@NonNull Context context,
                          @NonNull Scheduler scheduler) {
         checkNotNull(context, "context cannot be null");
         checkNotNull(scheduler, "scheduleProvider cannot be null");
