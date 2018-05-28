@@ -2,6 +2,7 @@ package ycagri.challenge.main;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
@@ -59,26 +60,28 @@ public class DetailFragment extends DaggerFragment implements OnMapReadyCallback
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return FragmentDetailBinding.inflate(inflater, container, false).getRoot();
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         FragmentDetailBinding binding = DataBindingUtil.getBinding(view);
 
-        binding.vpVenuePhotos.setAdapter(new VenuePhotosPagerAdapter(new ArrayList<>()));
+        if (binding != null)
+            binding.vpVenuePhotos.setAdapter(new VenuePhotosPagerAdapter(new ArrayList<>()));
 
         String venueId = "";
         if (getArguments() != null) {
             venueId = getArguments().getString(ARG_VENUE_ID);
         }
         mViewModel.setVenueId(venueId);
-        binding.setViewModel(mViewModel);
+        if (binding != null)
+            binding.setViewModel(mViewModel);
 
         SupportMapFragment mapFragment = new SupportMapFragment();
         mapFragment.getMapAsync(this);
@@ -98,8 +101,9 @@ public class DetailFragment extends DaggerFragment implements OnMapReadyCallback
             super(items);
         }
 
+        @NonNull
         @Override
-        public Object instantiateItem(ViewGroup container, int position) {
+        public Object instantiateItem(@NonNull ViewGroup container, int position) {
             ItemDetailPagerBinding binding = ItemDetailPagerBinding.inflate(LayoutInflater.from(container.getContext()), container, false);
             binding.setViewModel(new VenuePhotoItemBinding(mItems.get(position)));
             container.addView(binding.getRoot());
@@ -107,11 +111,11 @@ public class DetailFragment extends DaggerFragment implements OnMapReadyCallback
         }
 
         @Override
-        public void destroyItem(ViewGroup container, int position, Object object) {
+        public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
             container.removeView((FrameLayout) object);
         }
 
-        public int getItemPosition(Object object) {
+        public int getItemPosition(@NonNull Object object) {
             return POSITION_NONE;
         }
     }

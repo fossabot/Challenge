@@ -19,6 +19,7 @@ import ycagri.challenge.BR;
 import ycagri.challenge.data.VenuePhoto;
 import ycagri.challenge.data.source.VenueRepository;
 import ycagri.challenge.di.ActivityScoped;
+import ycagri.challenge.util.EspressoIdlingResource;
 
 import static dagger.internal.Preconditions.checkNotNull;
 
@@ -48,7 +49,6 @@ public class DetailViewModel extends BaseObservable {
         photos.clear();
         mVenueId = venueId;
         getVenuePhotos();
-        getVenueLocation();
     }
 
     public void setMap(GoogleMap map) {
@@ -64,6 +64,7 @@ public class DetailViewModel extends BaseObservable {
     }
 
     private void getVenuePhotos() {
+        EspressoIdlingResource.increment();
         mVenueRepository.getVenuePhotos(mVenueId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -71,10 +72,13 @@ public class DetailViewModel extends BaseObservable {
                     photos.clear();
                     photos.addAll(venuePhotos);
                     notifyPropertyChanged(BR.noPhotoVisibility);
+                    EspressoIdlingResource.decrement();
+                    getVenueLocation();
                 });
     }
 
     private void getVenueLocation() {
+        EspressoIdlingResource.increment();
         mVenueRepository.getVenueLocation(mVenueId)
                 .take(1)
                 .subscribeOn(Schedulers.io())
@@ -83,6 +87,7 @@ public class DetailViewModel extends BaseObservable {
                     if (mMap != null) {
                         mLatestLatLng = new LatLng(venueLocation.getLatitude(), venueLocation.getLongitude());
                         updateMap();
+                        EspressoIdlingResource.decrement();
                     }
                 });
     }

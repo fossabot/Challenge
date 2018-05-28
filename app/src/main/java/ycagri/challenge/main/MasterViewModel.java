@@ -23,6 +23,7 @@ import io.reactivex.schedulers.Schedulers;
 import ycagri.challenge.data.Venue;
 import ycagri.challenge.data.source.VenueRepository;
 import ycagri.challenge.di.ActivityScoped;
+import ycagri.challenge.util.EspressoIdlingResource;
 
 import static dagger.internal.Preconditions.checkNotNull;
 
@@ -88,12 +89,14 @@ public class MasterViewModel extends BaseObservable {
         LocationServices.getFusedLocationProviderClient(context).getLastLocation()
                 .addOnCompleteListener(task1 -> {
                     if (task1.isSuccessful()) {
+                        EspressoIdlingResource.increment();
                         mVenueRepository.getVenues(task1.getResult().getLatitude(), task1.getResult().getLongitude())
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(venues -> {
                                     this.venues.clear();
                                     this.venues.addAll(venues);
+                                    EspressoIdlingResource.decrement();
                                 });
                     }
                 });
