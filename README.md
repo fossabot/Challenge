@@ -1,3 +1,5 @@
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fycagri%2FChallenge.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fycagri%2FChallenge?ref=badge_shield)
+
 Challenge
 ===========================================
 Challenge is an Android application simply displays 50 closest Foursquare venues using user location.
@@ -24,3 +26,7 @@ Application simply demonstrates the closest venues in the master screen. Photos 
 <h2>Support</h2>
 
 *Challenge is written by [Yigit Cagri Akkaya](https://www.linkedin.com/in/yigit-cagri-akkaya-94147235/).* Feel free to pester me to fix anything that's broken!
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fycagri%2FChallenge.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fycagri%2FChallenge?ref=badge_large)
